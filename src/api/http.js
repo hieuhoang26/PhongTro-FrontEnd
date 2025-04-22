@@ -1,21 +1,20 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import {
-  getAccessTokenFromLS,
-  getRefreshTokenFromLS,
-  setAccessTokenToLS,
-  setRefreshTokenToLS,
+  clearSession,
+  getAccessTokenFromSession,
+  getRefreshTokenFromSession,
+  setAccessTokenToSession,
+  setProfileToSession,
+  setRefreshTokenToSession,
 } from "../utils/storage";
-import authApi from "./auth";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { authApi } from "./auth";
 
 const baseUrl = "http://localhost:8080/api/v1/";
+
 class Http {
   constructor() {
-    this.accessToken = getAccessTokenFromLS();
-    this.refreshToken = getRefreshTokenFromLS();
-
     this.instance = axios.create({
       baseURL: baseUrl,
       timeout: 10000,
@@ -24,68 +23,64 @@ class Http {
       },
     });
 
-    // Interceptor để thêm accessToken vào request
+    // Interceptor để đính access token
     this.instance.interceptors.request.use(
       (config) => {
-        if (this.accessToken) {
-          config.headers.Authorization = `Bearer ${this.accessToken}`;
+        const accessToken = getAccessTokenFromSession();
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
         }
         return config;
       },
       (error) => Promise.reject(error)
     );
 
-    // Interceptor để xử lý lỗi response (ví dụ: token hết hạn)
+    // Interceptor xử lý response
     this.instance.interceptors.response.use(
       (response) => {
+        // Khi login thành công → lưu token
         if (response.config.url.includes("auth/login")) {
-          console.log(response);
-          const token = response.data.data;
-          const { accessToken, refreshToken } = jwtDecode(token, {
-            header: true,
-          });
-          console.log("accessToken", accessToken);
-          console.log("refreshToken", refreshToken);
-          setAccessTokenToLS(accessToken);
-          setRefreshTokenToLS(refreshToken);
+          const { accessToken, refreshToken } = response.data;
+          setAccessTokenToSession(accessToken);
+          setRefreshTokenToSession(refreshToken);
+
+          // const decoded = jwtDecode(accessToken);
+          // const { id, roleName } = decoded;
+          // setProfileToSession({ id, role: roleName });
         }
         return response;
       },
       async (error) => {
-        // if (error.response && error.response.status === 401) {
-        //   console.log("Token expired. Handle refresh here.");
-        // }
         const originalRequest = error.config;
+
         if (
           error.response &&
           error.response.status === 401 &&
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
+          const refreshToken = getRefreshTokenFromSession();
+
+          if (!refreshToken) {
+            return Promise.reject(error);
+          }
 
           try {
-            const refreshToken = getRefreshTokenFromLS();
-            if (!refreshToken) {
-              console.log("No refresh token found, logging out.");
-              return Promise.reject(error);
-            }
+            // const response = await authApi.refresh(refreshToken);
+            // const { accessToken, refreshToken: newRefreshToken } =
+            //   response.data;
 
-            const response = await authApi.refresh(refreshToken);
+            // setAccessTokenToSession(accessToken);
+            // setRefreshTokenToSession(newRefreshToken);
 
-            const { accessToken, refreshToken: newRefreshToken } =
-              response.data;
-
-            setAccessTokenToLS(accessToken);
-            setRefreshTokenToLS(newRefreshToken);
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
+            // originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             return this.instance(originalRequest);
           } catch (refreshError) {
-            console.log("Failed to refresh token, logging out.");
-            // logoutUser();
+            clearSession();
             return Promise.reject(refreshError);
           }
         }
+
         return Promise.reject(error);
       }
     );

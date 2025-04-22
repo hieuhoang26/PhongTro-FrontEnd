@@ -1,6 +1,40 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "../api/auth";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { AuthContext } from "../context/AuthContext";
+
+// Schema validate bằng Yup
+const schema = yup.object({
+  phone: yup.string().required("Số điện thoại không được để trống"),
+  password: yup.string().required("Mật khẩu không được để trống"),
+});
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await authApi.login(data);
+      console.log("Đăng nhập thành công:", response.data.data);
+      login(response.data.data);
+      // navigate("/");
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error.response?.data || error.message);
+      alert("Thông tin đăng nhập không chính xác!");
+    }
+  };
+
   return (
     <div className="container mx-auto mt-6 mb-6 lg:mt-12 lg:mb-12 px-4">
       <div className="flex justify-center">
@@ -20,17 +54,21 @@ const Login = () => {
             </a>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="form-floating mb-3 relative">
               <input
                 type="text"
                 id="phone"
-                name="phone"
+                // name="phone"
                 placeholder=" "
                 minLength={3}
                 required
                 data-msg="Không được phép để trống"
-                className="form-control form-control-lg rounded-[0.5rem] border border-gray-300 peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500"
+                // className="form-control form-control-lg rounded-[0.5rem] border border-gray-300 peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500"
+                className={`form-control form-control-lg rounded-[0.5rem] border text-lg ${
+                  errors.phone ? "border-red-500" : "border-gray-300"
+                } peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500`}
+                {...register("phone")}
               />
               <label
                 htmlFor="phone"
@@ -38,17 +76,26 @@ const Login = () => {
               >
                 Số điện thoại
               </label>
+              {errors.phone && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.phone.message}
+                </p>
+              )}
             </div>
             <div className="form-floating mb-3 relative">
               <input
-                type="text"
+                type="password"
                 id="password"
-                name="password"
+                // name="password"
                 placeholder=" "
                 minLength={3}
                 required
                 data-msg="Không được phép để trống"
-                className="form-control form-control-lg rounded-[0.5rem] border border-gray-300 peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500"
+                // className="form-control form-control-lg rounded-[0.5rem] border border-gray-300 peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500"
+                className={`form-control form-control-lg rounded-[0.5rem] border text-lg ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } peer block w-full px-8 py-4 text-base bg-white focus:border-blue-500 focus:ring-blue-500`}
+                {...register("password")}
               />
               <label
                 htmlFor="password"
@@ -56,15 +103,20 @@ const Login = () => {
               >
                 Mật khẩu
               </label>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="mt-6">
               <button
                 type="submit"
-                disabled
-                className="w-full py-3 bg-red-500 text-white rounded-xl text-lg font-semibold "
+                disabled={isSubmitting}
+                className="w-full py-3 bg-red-500 text-white rounded-xl text-lg font-semibold hover:bg-red-600"
               >
-                Đăng nhập
+                {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
               </button>
             </div>
           </form>

@@ -1,10 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 
-import jwtDecode from "jwt-decode";
 import {
   clearSession,
   getAccessTokenFromSession,
   getProfileFromSession,
+  setAccessTokenToSession,
+  setRefreshTokenToSession,
   setProfileToSession,
 } from "../utils/storage";
 
@@ -25,10 +26,12 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = (accessToken) => {
-    // setUserId(1);
-    // setRole();
-    // setProfileToSession({ id, role: roleName });
+  const login = (data) => {
+    setUserId(data.id);
+    setRole(data.role);
+    setProfileToSession({ id: data.id, role: data.role });
+    setAccessTokenToSession(data.accessToken);
+    setRefreshTokenToSession(data.refreshToken);
     setIsAuthenticated(true);
   };
 
