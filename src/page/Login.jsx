@@ -14,7 +14,8 @@ const schema = yup.object({
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, userId } = useContext(AuthContext);
+
   const {
     register,
     handleSubmit,

@@ -16,19 +16,19 @@ export const PostCard = ({ post }) => {
     <li className="bg-white shadow-sm rounded p-4 mb-2 grid sm:flex gap-3 h-full sm:h-[210px] overflow-hidden ">
       <div className="sm:w-2/5 relative h-full ">
         <a href={post.url} title={post.title} className="block relative h-full">
-          <div className="aspect-[5/3] h-full w-300px">
+          <div className="aspect-[4/3] h-full ">
             <img
               src={post.images[0]}
               alt="Main"
-              className="w-full h-full object-cover rounded"
+              className="h-full w-full object-cover rounded"
               loading="lazy"
             />
           </div>
 
           {/* Badge */}
-          <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
+          {/* <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
             <i className="bi bi-star-fill mr-1"></i> Tin VIP
-          </div>
+          </div> */}
           <div className="absolute bottom-2 left-2 bg-black/50 text-white text-sm px-2 py-0.5 rounded">
             <i className="bi bi-camera-fill mr-1"></i>
             {post.images.length}

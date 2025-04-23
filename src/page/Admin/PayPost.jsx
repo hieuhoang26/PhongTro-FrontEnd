@@ -1,0 +1,447 @@
+import React, { useState } from "react";
+
+export const PayPost = () => {
+  const [packageType, setPackageType] = useState("day");
+  const [selectedPackage, setSelectedPackage] = useState("4");
+  const [totalDay, setTotalDay] = useState("3");
+  const [totalWeek, setTotalWeek] = useState("1");
+  const [totalMonth, setTotalMonth] = useState("1");
+  const [postLabel, setPostLabel] = useState(false);
+  const [usePostTiktok, setUsePostTiktok] = useState(false);
+
+  const days = Array.from({ length: 90 }, (_, i) => i + 3);
+  const weeks = Array.from({ length: 10 }, (_, i) => i + 1);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+  const getPackagePrice = () => {
+    const pkg = packages.find((p) => p.value === selectedPackage);
+    if (!pkg) return "";
+
+    if (packageType === "day") return pkg.priceDay;
+    if (packageType === "week") return pkg.priceWeek;
+    return pkg.priceMonth;
+  };
+
+  const renderPackageOptions = () => {
+    return packages.map((pkg) => (
+      <option
+        key={pkg.value}
+        value={pkg.value}
+        data-title={pkg.title}
+        data-price-day={pkg.priceDay}
+        data-price-week={pkg.priceWeek}
+        data-price-month={pkg.priceMonth}
+      >
+        {pkg.title}{" "}
+        {packageType === "day"
+          ? pkg.priceDay
+          : packageType === "week"
+          ? pkg.priceWeek
+          : pkg.priceMonth}
+      </option>
+    ));
+  };
+
+  return (
+    <div class="flex justify-center">
+      <div class="w-full mt-3 flex gap-5">
+        <div class="w-7/10">
+          <div className="bg-white shadow-sm rounded p-4 mb-4">
+            <div className="text-lg font-medium mb-3">Chọn gói tin đăng</div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div>
+                <div className="relative">
+                  <label
+                    htmlFor="package_type"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Gói thời gian
+                  </label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    id="package_type"
+                    value={packageType}
+                    onChange={(e) => setPackageType(e.target.value)}
+                  >
+                    <option value="day">Đăng theo ngày</option>
+                    <option value="week">Đăng theo tuần</option>
+                    <option value="month">Đăng theo tháng</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="sm:col-span-2">
+                <div className="relative">
+                  <label
+                    htmlFor="post_package"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Chọn loại tin
+                  </label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    id="post_package"
+                    value={selectedPackage}
+                    onChange={(e) => setSelectedPackage(e.target.value)}
+                    required
+                  >
+                    {renderPackageOptions()}
+                  </select>
+                </div>
+              </div>
+
+              {packageType === "day" && (
+                <div>
+                  <div className="relative">
+                    <label
+                      htmlFor="total_day"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Số ngày
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="total_day"
+                      value={totalDay}
+                      onChange={(e) => setTotalDay(e.target.value)}
+                    >
+                      {days.map((day) => (
+                        <option key={day} value={day}>
+                          {day} ngày
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {packageType === "week" && (
+                <div>
+                  <div className="relative">
+                    <label
+                      htmlFor="total_week"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Số tuần
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="total_week"
+                      value={totalWeek}
+                      onChange={(e) => setTotalWeek(e.target.value)}
+                    >
+                      {weeks.map((week) => (
+                        <option key={week} value={week}>
+                          {week} tuần
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {packageType === "month" && (
+                <div>
+                  <div className="relative">
+                    <label
+                      htmlFor="total_month"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Số tháng
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="total_month"
+                      value={totalMonth}
+                      onChange={(e) => setTotalMonth(e.target.value)}
+                    >
+                      {months.map((month) => (
+                        <option key={month} value={month}>
+                          {month} tháng
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-3 space-y-3">
+              {/* Checkbox: Gắn nhãn cho thuê nhanh */}
+              <div className="flex items-start space-x-2">
+                <input
+                  id="post_label"
+                  type="checkbox"
+                  checked={postLabel}
+                  onChange={(e) => setPostLabel(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="post_label" className="text-sm text-gray-700">
+                  Gắn nhãn cho thuê nhanh (
+                  <span className="text-green-600 font-semibold">2000 ₫</span>
+                  /ngày)
+                </label>
+              </div>
+
+              {/* Checkbox: Đăng video Tiktok */}
+              {["1", "2", "3", "4"].includes(selectedPackage) && (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <input
+                      id="use_post_tiktok"
+                      type="checkbox"
+                      checked={usePostTiktok}
+                      onChange={(e) => setUsePostTiktok(e.target.checked)}
+                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="use_post_tiktok"
+                      className="text-sm text-gray-700"
+                    >
+                      Đăng video lên kênh Tiktok{" "}
+                      <a
+                        href="https://www.tiktok.com/@phongtro123.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800"
+                      >
+                        Phongtro123
+                      </a>{" "}
+                      (<s className="text-red-500">100.000₫</s>{" "}
+                      <span className="text-green-600 font-semibold">0₫</span>)
+                    </label>
+                  </div>
+
+                  <em className="block text-xs text-red-600">
+                    Nếu bạn chưa có sẵn video, chỉ cần tích chọn, nhân viên
+                    Phongtro123.com sẽ chủ động liên hệ để hỗ trợ bạn nhận
+                    video, tải lên hệ thống hoặc thậm chí đến tận nơi để quay
+                    video chuyên nghiệp.
+                  </em>
+                </>
+              )}
+            </div>
+
+            <div>
+              <div className={`${selectedPackage !== "6" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink-1">
+                    <p className="mb-1 font-bold">Tin miễn phí</p>
+                    <p className="mb-1">
+                      <span className="text-gray-600 font-normal">
+                        Tiêu đề màu mặc định, viết thường
+                      </span>
+                      . Hiển thị sau các tin VIP.
+                    </p>
+                    <p className="m-0">
+                      Tin đăng sẽ phải chờ phê duyệt trước khi hiển thị.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${selectedPackage !== "5" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink">
+                    <p className="mb-1 font-bold">Tin thường</p>
+                    <p className="mb-1">
+                      <span className="text-gray-600 font-normal">
+                        Tiêu đề màu mặc định, viết thường
+                      </span>
+                      . Hiển thị sau các tin VIP.
+                    </p>
+                    <p className="m-0">
+                      Tin đăng sẽ phải chờ phê duyệt trước khi hiển thị.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${selectedPackage !== "4" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink">
+                    <p className="mb-1 font-bold">
+                      TIN VIP 3<span className="star star-2 ml-1"></span>
+                    </p>
+                    <p className="mb-1">
+                      <span className="text-blue-600 font-bold uppercase">
+                        TIÊU ĐỀ IN HOA MÀU XANH
+                      </span>
+                      , gắn biểu tượng 2 ngôi sao màu vàng ở tiêu đề tin đăng.
+                      Hiển thị sau tin VIP nổi bật, Tin VIP 1, Tin VIP 2, Tin
+                      VIP 3 và trên các tin khác.
+                    </p>
+                    <p className="m-0">
+                      Tin đăng VIP hiển thị ngay, không cần chờ.
+                    </p>
+                    <p className="m-0 text-base text-red-600 font-medium">
+                      (Khuyên dùng)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${selectedPackage !== "3" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink">
+                    <p className="mb-1 font-bold">
+                      TIN VIP 2<span className="star star-3 ml-1"></span>
+                    </p>
+                    <p className="mb-1">
+                      <span className="text-orange-600 font-bold uppercase">
+                        TIÊU ĐỀ IN HOA MÀU CAM
+                      </span>
+                      , gắn biểu tượng 3 ngôi sao màu vàng ở tiêu đề tin đăng.
+                      Hiển thị sau tin VIP nổi bật, Tin VIP 1, Tin VIP 2 và trên
+                      các tin khác.
+                    </p>
+                    <p className="m-0">
+                      Tin đăng VIP hiển thị ngay, không cần chờ.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${selectedPackage !== "2" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink">
+                    <p className="mb-1 font-bold">
+                      TIN VIP 1<span className="star star-4 ml-1"></span>
+                    </p>
+                    <p className="mb-1">
+                      <span className="text-pink-600 font-bold uppercase">
+                        TIÊU ĐỀ IN HOA MÀU HỒNG
+                      </span>
+                      , gắn biểu tượng 4 ngôi sao màu vàng ở tiêu đề tin đăng.
+                      Hiển thị sau tin VIP nổi bật, Tin VIP 1 và trên các tin
+                      khác.
+                    </p>
+                    <p className="m-0">
+                      Tin đăng VIP hiển thị ngay, không cần chờ.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${selectedPackage !== "1" ? "hidden" : ""}`}>
+                <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
+                  <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
+                  <div className="flex-shrink">
+                    <p className="mb-1 font-bold">
+                      TIN NỔI BẬT<span className="star star-5 ml-1"></span>
+                    </p>
+                    <p className="mb-1">
+                      <span className="text-red-600 font-bold uppercase">
+                        TIÊU ĐỀ IN HOA MÀU ĐỎ
+                      </span>
+                      , gắn biểu tượng 5 ngôi sao màu vàng và hiển thị to và
+                      nhiều hình hơn các tin khác. Nằm trên tất cả các tin khác,
+                      được hưởng nhiều ưu tiên và hiệu quả giao dịch cao nhất.
+                      Đồng thời xuất hiện đầu tiên ở mục tin nổi bật xuyên suốt
+                      khu vực chuyên mục đó
+                    </p>
+                    <p className="m-0">
+                      Tin đăng VIP hiển thị ngay, không cần chờ.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Method to Pay */}
+          <div class="bg-white shadow-sm rounded p-4 mb-4">
+            <div class="text-xl font-medium">Chọn phương thức thanh toán</div>
+          </div>
+        </div>
+        <div class="w-3/10">
+          <div className="bg-blue-100 shadow rounded p-4 mt-lg-0 sticky top-[158px]">
+            <div className="text-xl font-semibold text-gray-800 mb-4">
+              Thông tin thanh toán
+            </div>
+            <table className="table-auto w-full text-sm text-gray-700">
+              <tbody>
+                <tr>
+                  <td className="pl-0 py-1">Loại tin:</td>
+                  <td className="py-1 font-medium">Tin thường</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Gói thời gian:</td>
+                  <td className="py-1 font-medium">Đăng theo ngày</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Đơn giá:</td>
+                  <td className="py-1 font-medium">2.000/ngày</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Số ngày VIP:</td>
+                  <td className="py-1 font-medium">5 ngày</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Ngày hết hạn:</td>
+                  <td className="py-1 font-medium">0:1, 29/4/2025</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Thuế VAT (10)%:</td>
+                  <td className="py-1 font-bold">0₫</td>
+                </tr>
+                <tr>
+                  <td className="pl-0 py-1">Thành tiền:</td>
+                  <td className="py-1 font-bold text-black text-lg">10.000₫</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+const packages = [
+  {
+    value: "6",
+    title: "Tin miễn phí",
+    priceDay: "(0/ngày)",
+    priceWeek: "(0/tuần)",
+    priceMonth: "(0/tháng)",
+  },
+  {
+    value: "5",
+    title: "Tin thường",
+    priceDay: "(2.000/ngày)",
+    priceWeek: "(12.000/tuần)",
+    priceMonth: "(48.000/tháng)",
+  },
+  {
+    value: "4",
+    title: "Tin VIP 3",
+    priceDay: "(10.000/ngày)",
+    priceWeek: "(63.000/tuần)",
+    priceMonth: "(240.000/tháng)",
+  },
+  {
+    value: "3",
+    title: "Tin VIP 2",
+    priceDay: "(20.000/ngày)",
+    priceWeek: "(133.000/tuần)",
+    priceMonth: "(540.000/tháng)",
+  },
+  {
+    value: "2",
+    title: "Tin VIP 1",
+    priceDay: "(30.000/ngày)",
+    priceWeek: "(190.000/tuần)",
+    priceMonth: "(800.000/tháng)",
+  },
+  {
+    value: "1",
+    title: "Tin VIP nổi bật",
+    priceDay: "(50.000/ngày)",
+    priceWeek: "(315.000/tuần)",
+    priceMonth: "(1.200.000/tháng)",
+  },
+];

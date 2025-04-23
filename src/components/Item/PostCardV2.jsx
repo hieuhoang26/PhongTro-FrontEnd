@@ -16,7 +16,7 @@ export const PostCardV2 = ({ post }) => {
       <div className="sm:w-2/5 relative">
         <a href={"/"} title={post.title} className="block relative">
           {/* Container chính - sử dụng aspect ratio */}
-          <div className="flex h-[200px] w-[300px] rounded-md overflow-hidden bg-gray-100">
+          <div className="flex h-[200px] w-[250px] rounded-md overflow-hidden bg-gray-100">
             {/* Ảnh lớn bên trái */}
             <div className="w-2/3 h-full relative">
               <img

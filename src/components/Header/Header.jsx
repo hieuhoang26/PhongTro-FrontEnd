@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import logo from "../../assets/logowithoutbg.png";
 import default_user from "../../assets/default_user.svg";
 import {
@@ -14,16 +14,37 @@ import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
 import { IoIosLogOut } from "react-icons/io";
 import { GoPersonAdd } from "react-icons/go";
-import { FaCaretDown } from "react-icons/fa";
+import { FaCaretDown, FaUser } from "react-icons/fa";
 import FilterModal from "../Filter/FilterModal";
 import LocationModal from "../Filter/LocationModal";
+import { AuthContext } from "../../context/AuthContext";
+import { userApi } from "../../api/user";
+import UserDropdown from "../UserDropdown";
 
 const Header = () => {
+  const { isAuthenticated, userId } = useContext(AuthContext);
+
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   const [showLocation, setShowLocation] = useState(false);
 
   const [showFilter, setShowFilter] = useState(false);
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated && userId) {
+      userApi
+        .getById(userId)
+        .then((res) => {
+          console.log("User data:", res.data);
+          setUserInfo(res.data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, [isAuthenticated, userId]);
 
   const handleOpenLocation = () => {
     setShowLocation(!showLocation);
@@ -100,34 +121,46 @@ const Header = () => {
                       alt="Ảnh đại diện"
                       className="w-8 h-8 rounded-full mr-2"
                     />
-                    <span>Tài khoản</span>
+                    <span>
+                      {isAuthenticated
+                        ? userInfo?.name || "Người dùng"
+                        : "Tài khoản"}
+                    </span>
                     <FaCaretDown />
                   </button>
 
                   {showAccountDropdown && (
                     <div className="absolute right-0 mt-2 w-56 bg-white shadow-lg rounded-md py-2 z-50">
-                      <a
-                        href="/dang-ky"
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        <div className="flex items-center">
-                          <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mr-2">
-                            <GoPersonAdd className="w-4 h-4" />
-                          </span>
-                          Tạo tài khoản mới
-                        </div>
-                      </a>
-                      <a
-                        href="/dang-nhap"
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        <div className="flex items-center">
-                          <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mr-2">
-                            <IoIosLogOut className="w-4 h-4" />
-                          </span>
-                          Đăng nhập
-                        </div>
-                      </a>
+                      {!isAuthenticated ? (
+                        <>
+                          <a
+                            href="/dang-ky"
+                            className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            <div className="flex items-center">
+                              <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mr-2">
+                                <GoPersonAdd className="w-4 h-4" />
+                              </span>
+                              Tạo tài khoản mới
+                            </div>
+                          </a>
+                          <a
+                            href="/dang-nhap"
+                            className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            <div className="flex items-center">
+                              <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mr-2">
+                                <IoIosLogOut className="w-4 h-4" />
+                              </span>
+                              Đăng nhập
+                            </div>
+                          </a>
+                        </>
+                      ) : (
+                        <>
+                          <UserDropdown user={userInfo} />
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

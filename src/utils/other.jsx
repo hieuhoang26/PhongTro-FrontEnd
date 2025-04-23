@@ -79,3 +79,10 @@ export function formatDate(inputDate) {
 
   return `${dayOfWeek}, ${hours}:${minutes} ${day}/${month}/${year}`;
 }
+
+export const formatNumber = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+export const parseNumber = (str) => {
+  return str.replace(/\./g, "");
+};

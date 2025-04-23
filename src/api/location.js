@@ -10,6 +10,7 @@ export const locationApi = {
   getCities() {
     return http.get(URL_CITY);
   },
+
   getDistricts(cityId) {
     return http.get(`${URL_DISTRICT}?cityId=${cityId}`);
   },

@@ -80,7 +80,7 @@ export const PostCardV3 = ({ post }) => {
       <div className="flex flex-col justify-between text-sm">
         <div className="space-y-1">
           <h3 className="font-semibold text-base text-red-600 uppercase">
-            <a href="/">{post.title}</a>
+            <a href={`/detail/${post.id}`}>{post.title}</a>
           </h3>
           <div className="flex items-center gap-4">
             <span className="text-green-600 font-semibold text-base">
