@@ -6,26 +6,7 @@ import ImageUploadSection from "../../components/Admin/ImageUploadSection";
 import VideoUploadSection from "../../components/Admin/VideoUploadSection";
 import { AddPostNav } from "../../components/Admin/AddPostNav";
 
-export const InfoPost = () => {
-  const [formData, setFormData] = useState({
-    category: "",
-    city: "",
-    district: "",
-    ward: "",
-    street: "",
-    streetNumber: "",
-    address: "",
-    title: "",
-    description: "",
-    price: "",
-    priceUnit: "0",
-    area: "",
-    features: [],
-    images: [],
-    videoLink: "",
-    videoFiles: [],
-  });
-
+export const InfoPost = ({ formData, setFormData, handleNext }) => {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -483,7 +464,8 @@ export const InfoPost = () => {
             {/* Submit Button */}
             <div className="my-5">
               <button
-                type="submit"
+                type="button"
+                onClick={handleNext}
                 className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg w-full flex justify-center items-center transition"
               >
                 Tiếp tục
