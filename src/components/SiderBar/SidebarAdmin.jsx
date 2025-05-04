@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BsClockHistory, BsWindowPlus } from "react-icons/bs";
 import { CiUser } from "react-icons/ci";
 import { FaRegFolder } from "react-icons/fa";
@@ -6,19 +6,43 @@ import { IoIosLogOut } from "react-icons/io";
 import { IoFolderOpenOutline, IoPricetagOutline } from "react-icons/io5";
 import { LiaEdit } from "react-icons/lia";
 import { SlCalender } from "react-icons/sl";
+import { AuthContext } from "../../context/AuthContext";
+import { userApi } from "../../api/user";
 
 export const SidebarAdmin = () => {
-  const [user] = useState({
-    name: "Hoang Nam Tiến",
-    phone: "0338330675",
-    accountId: "150901",
-    balance: 0,
-    support: {
-      name: "Thanh Ly - LBKCorp",
-      phone: "0909316890",
-      zalo: "https://zalo.me/0909316890",
-    },
-  });
+  const { userId } = useContext(AuthContext);
+
+  const [userInfo, setUserInfo] = useState();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        try {
+          setLoading(true); // Set loading to true when starting to fetch
+          const res = await userApi.getById(userId);
+          setUserInfo(res.data.data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false); // Set loading to false when done (whether success or error)
+        }
+      } else {
+        setLoading(false); // No userId, no need to load
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <div className="sidebar-admin-loading">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <aside className="hidden xl:block fixed top-[45px] left-0 w-[16.6667%] bg-white text-gray-800 shadow-sm h-full overflow-auto pb-[45px]">
@@ -30,10 +54,10 @@ export const SidebarAdmin = () => {
             alt="User avatar"
           />
           <div className="ml-2 pl-1 flex-grow">
-            <span className="font-medium block truncate">{user.name}</span>
-            <span className="text-sm block">{user.phone}</span>
+            <span className="font-medium block truncate">{userInfo?.name}</span>
+            <span className="text-sm block">{userInfo?.phone}</span>
             <span className="text-xs block mt-1">
-              Mã tài khoản: {user.accountId}
+              Mã tài khoản: {userInfo?.id}
             </span>
           </div>
         </div>
@@ -42,7 +66,9 @@ export const SidebarAdmin = () => {
           <div className="flex justify-between bg-yellow-100 text-gray-800 p-2 text-sm rounded border border-yellow-200">
             <div>
               <p className="m-0 text-sm">Số dư tài khoản</p>
-              <p className="m-0 text-base font-bold">{user.balance}</p>
+              <p className="m-0 text-base font-bold">
+                {userInfo?.balance || 0}
+              </p>
             </div>
             <a
               href="/admin"
@@ -67,7 +93,7 @@ export const SidebarAdmin = () => {
           </li>
           <li>
             <a
-              href="/admin"
+              href="/admin/bai-dang-admin"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <IoFolderOpenOutline size={20} />
@@ -76,14 +102,14 @@ export const SidebarAdmin = () => {
           </li>
           <li>
             <a
-              href="/admin"
+              href="/admin/duyet-tin-dang"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <BsWindowPlus size={20} />
-              <span>Nạp tiền vào tài khoản</span>
+              <span>Duyệt tin đăng </span>
             </a>
           </li>
-          <li>
+          {/* <li>
             <a
               href="/admin"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
@@ -109,7 +135,7 @@ export const SidebarAdmin = () => {
               <IoPricetagOutline size={20} />
               <span>Bảng giá dịch vụ</span>
             </a>
-          </li>
+          </li> */}
           <li>
             <a
               href="/admin"
@@ -132,7 +158,7 @@ export const SidebarAdmin = () => {
 
         <div className="border-t p-3">
           <a
-            href={user.support.zalo}
+            href="https://zalo.me/1234567890"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-start text-gray-800 hover:bg-gray-100 rounded p-2"

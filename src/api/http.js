@@ -17,10 +17,10 @@ class Http {
   constructor() {
     this.instance = axios.create({
       baseURL: baseUrl,
-      timeout: 10000,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      // timeout: 10000,
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
     });
 
     // Interceptor để đính access token
@@ -30,6 +30,7 @@ class Http {
         if (accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
+
         return config;
       },
       (error) => Promise.reject(error)

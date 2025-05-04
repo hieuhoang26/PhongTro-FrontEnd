@@ -6,8 +6,45 @@ export const postApi = {
   filter(params) {
     return http.get(FILTER, { params });
   },
+  createPost(formData) {
+    return http.post("post", formData);
+
+    // return http.post("post", formData, {
+    //   headers: {
+    //     // "Content-Type": "multipart/form-data",
+    //   },
+    // });
+  },
+  updatePost(id, formData) {
+    return http.put(`post/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+  getPostsByStatus(userId, status, page, size, sort) {
+    return http.get("post/status", {
+      params: {
+        userId,
+        status,
+        page,
+        size,
+        sort,
+      },
+    });
+  },
+
   detail(id) {
     return http.get(`post/${id}`);
+  },
+  changeStatus(id, status) {
+    return http.patch(`post/${id}`, status, {
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+
+  delete(id) {
+    return http.delete(`post/${id}`);
   },
 };
 // postApi.filter({

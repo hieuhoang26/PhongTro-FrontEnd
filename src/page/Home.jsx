@@ -10,43 +10,64 @@ import { PostCard } from "../components/Item/PostCard";
 import { PostCardV3 } from "../components/Item/PostCardV3";
 import { postApi } from "../api/post";
 import { Pagination } from "../components/Pagination";
+import { useFilter } from "../context/FilterContext";
+import Spinner from "../components/Spinner";
 
 const tabs = [
-  { label: "Đề xuất", value: "mac-dinh" },
-  { label: "Mới đăng", value: "moi-nhat" },
-  { label: "Có video", value: "video" },
+  {
+    label: "Đề xuất",
+    value: "mac-dinh",
+    sortBy: "isVip",
+    sortDirection: "desc",
+  },
+  {
+    label: "Mới đăng",
+    value: "moi-nhat",
+    sortBy: "createdAt",
+    sortDirection: "desc",
+  },
+  { label: "Có video", value: "video", hasVideo: true },
 ];
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("mac-dinh");
 
-  const [postsData, setPostsData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const [page, setPage] = useState(0);
-  const [size] = useState(3);
-  const [totalPages, setTotalPages] = useState(0);
+  // const [postsData, setPostsData] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [page, setPage] = useState(0);
+  // const [size] = useState(3);
+  // const [totalPages, setTotalPages] = useState(0);
+  const {
+    postsData,
+    loading,
+    totalPages,
+    filterParams,
+    setFilterParams,
+    fetchPosts,
+    area,
+    price,
+    setArea,
+    setPrice,
+  } = useFilter();
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const params = {
-          page: page,
-          size: size,
-        };
-        const response = await postApi.filter(params);
-        setPostsData(response.data.data.items);
-        setTotalPages(response.data.data.total);
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPosts();
-  }, [page]);
+  }, [filterParams.page]);
 
+  // useEffect(() => {
+  //   fetchPosts({
+  //     isVip: 1,
+  //     sortBy: "createdAt",
+  //     sortDirection: "desc",
+  //   });
+  // }, [filterParams.page]);
+
+  const handlePageChange = (newPage) => {
+    setFilterParams((prev) => ({
+      ...prev,
+      page: newPage - 1, // Vì Pagination bên bạn đang truyền newPage (1-based) còn API dùng (0-based)
+    }));
+  };
   return (
     <div className="flex justify-center mt-6">
       <div className="w-full max-w-screen-xl flex gap-6 px-4">
@@ -77,10 +98,16 @@ export default function Home() {
           {/* tabs */}
           <div className="mt-4 mb-3 pt-2 flex gap-4">
             {tabs.map((tab) => (
-              <Link
+              <button
                 key={tab.value}
-                to={`/?orderby=${tab.value}`}
-                onClick={() => setActiveTab(tab.value)}
+                onClick={() => {
+                  setActiveTab(tab.value);
+                  fetchPosts({
+                    sortBy: tab.sortBy,
+                    sortDirection: tab.sortDirection,
+                    // hasVideo: tab.hasVideo ?? undefined,
+                  });
+                }}
                 className={`text-sm pb-1 ${
                   activeTab === tab.value
                     ? "font-medium border-b border-black text-black"
@@ -88,16 +115,16 @@ export default function Home() {
                 }`}
               >
                 {tab.label}
-              </Link>
+              </button>
             ))}
           </div>
+
           {/* posts */}
           {loading ? (
             <Spinner />
           ) : (
             <>
               {postsData.map((item) => {
-                console.log(item);
                 if (item.isVip === 3)
                   return <PostCardV3 key={item.id} post={item} />;
                 if (item.isVip === 2)
@@ -113,9 +140,10 @@ export default function Home() {
                 onPageChange={handlePageChange}
               /> */}
               <Pagination
-                currentPage={page + 1}
+                currentPage={filterParams.page + 1}
                 totalPages={totalPages}
-                onPageChange={(newPage) => setPage(newPage - 1)}
+                // onPageChange={(newPage) => setPage(newPage - 1)}
+                onPageChange={handlePageChange}
               />
             </>
           )}
@@ -128,10 +156,14 @@ export default function Home() {
               <FilterPage
                 title="Xem theo khoảng giá"
                 items={priceRanges.filter((item) => item.value !== "ALL")}
+                selectedValue={price}
+                onSelect={(value) => setPrice(value)}
               />
               <FilterPage
                 title="Xem theo diện tích"
                 items={areaRanges.filter((item) => item.value !== "ALL")}
+                selectedValue={area}
+                onSelect={(value) => setArea(value)}
               />
             </div>
             <div className="bg-white border border-gray-300 p-4 rounded-xl shadow ">

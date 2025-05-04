@@ -29,7 +29,7 @@ const Login = () => {
       const response = await authApi.login(data);
       console.log("Đăng nhập thành công:", response.data.data);
       login(response.data.data);
-      // navigate("/");
+      navigate("/");
     } catch (error) {
       console.error("Lỗi đăng nhập:", error.response?.data || error.message);
       alert("Thông tin đăng nhập không chính xác!");

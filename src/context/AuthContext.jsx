@@ -40,7 +40,7 @@ const AuthProvider = ({ children }) => {
     setUserId(null);
     setRole(null);
     setIsAuthenticated(false);
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

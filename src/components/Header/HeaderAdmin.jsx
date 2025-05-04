@@ -101,7 +101,7 @@ export default function HeaderAdmin() {
                   src="https://phongtro123.com/images/default-user.svg"
                   alt="avatar"
                 />
-                <span className="truncate max-w-[130px]">Hoang Nam Tiến</span>
+                {/* <span className="truncate max-w-[130px]">Hoang Nam Tiến</span> */}
               </button>
             </div>
 

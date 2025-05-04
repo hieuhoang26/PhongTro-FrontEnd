@@ -15,7 +15,11 @@ export const PostCard = ({ post }) => {
   return (
     <li className="bg-white shadow-sm rounded p-4 mb-2 grid sm:flex gap-3 h-full sm:h-[210px] overflow-hidden ">
       <div className="sm:w-2/5 relative h-full ">
-        <a href={post.url} title={post.title} className="block relative h-full">
+        <a
+          href={`/detail/${post.id}`}
+          title={post.title}
+          className="block relative h-full"
+        >
           <div className="aspect-[4/3] h-full ">
             <img
               src={post.images[0]}
@@ -38,7 +42,7 @@ export const PostCard = ({ post }) => {
 
       <div className="sm:w-3/5 text-sm space-y-2">
         <h3 className="font-semibold text-base text-gray-800 line-clamp-2">
-          <a href={post.url}>{post.title}</a>
+          <a href={`/detail/${post.id}`}>{post.title}</a>
         </h3>
 
         <div className="flex items-center gap-4">

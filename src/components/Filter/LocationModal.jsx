@@ -3,8 +3,20 @@ import { IoArrowBack, IoClose } from "react-icons/io5";
 import { FaAngleRight } from "react-icons/fa";
 import { useFilter } from "../../context/FilterContext";
 
-export default function LocationModal({ isOpen, onClose }) {
+export default function LocationModal({ isOpen, onClose, setAddInfo }) {
   const [step, setStep] = useState("city"); // city -> district -> ward
+
+  const [selectedCityName, setSelectedCityName] = useState("");
+  const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  const [selectedWardName, setSelectedWardName] = useState("");
+
+  useEffect(() => {
+    const parts = [];
+    if (selectedWardName) parts.push(selectedWardName);
+    if (selectedDistrictName) parts.push(selectedDistrictName);
+    if (selectedCityName) parts.push(selectedCityName);
+    setAddInfo(parts.length > 0 ? parts.join(", ") : "All locations");
+  }, [selectedCityName, selectedDistrictName, selectedWardName]);
 
   const {
     city,
@@ -24,18 +36,27 @@ export default function LocationModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setStep("city");
+    }
+  }, [isOpen]);
+
   const handleSelectCity = (city) => {
     setCity(city.id);
+    setSelectedCityName(city.name);
     setStep("district");
   };
 
   const handleSelectDistrict = (district) => {
     setDistrict(district.id);
+    setSelectedDistrictName(district.name);
     setStep("ward");
   };
 
   const handleSelectWard = (ward) => {
     setWard(ward.id);
+    setSelectedWardName(ward.name);
     onClose();
   };
 
@@ -56,9 +77,13 @@ export default function LocationModal({ isOpen, onClose }) {
         <ul className="flex flex-col gap-2">
           <li
             onClick={() => {
+              setSelectedCityName("Toàn quốc");
+              setSelectedDistrictName("");
+              setSelectedWardName("");
               setCity("");
               setDistrict("");
               setWard("");
+              onClose();
             }}
             className="flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
           >
@@ -75,7 +100,7 @@ export default function LocationModal({ isOpen, onClose }) {
               className="flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <input type="checkbox" checked={i?.id === city.id} readOnly />
+                <input type="checkbox" checked={i?.id === city} readOnly />
                 <span>{i.name}</span>
               </div>
               <FaAngleRight className="text-gray-400" />
@@ -88,8 +113,10 @@ export default function LocationModal({ isOpen, onClose }) {
         <ul className="flex flex-col gap-2">
           <li
             onClick={() => {
+              setSelectedWardName("");
               setDistrict("");
               setWard("");
+              onClose();
             }}
             className="flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
           >
@@ -106,11 +133,7 @@ export default function LocationModal({ isOpen, onClose }) {
               className="flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={i?.id === district.id}
-                  readOnly
-                />
+                <input type="checkbox" checked={i?.id === district} readOnly />
                 <span>{i.name}</span>
               </div>
               <FaAngleRight className="text-gray-400" />
@@ -141,7 +164,7 @@ export default function LocationModal({ isOpen, onClose }) {
               className="flex items-center justify-between px-2 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <input type="checkbox" checked={i?.id === ward.id} readOnly />
+                <input type="checkbox" checked={i?.id === ward} readOnly />
                 <span>{i.name}</span>
               </div>
             </li>
@@ -184,8 +207,8 @@ export default function LocationModal({ isOpen, onClose }) {
                 {step === "city"
                   ? "Chọn tỉnh / thành phố"
                   : step === "district"
-                  ? `Quận / huyện - ${city?.name}`
-                  : `Phường / xã - ${district?.name}`}
+                  ? `Quận / huyện - ${selectedCityName}`
+                  : `Phường / xã - ${selectedDistrictName}`}
               </span>
             </div>
 

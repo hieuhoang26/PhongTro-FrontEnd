@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { set } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
 import { PaymentSummary } from "./PaymentSummary";
@@ -48,7 +48,7 @@ export const packages = [
   },
 ];
 
-export const PayPost = ({ setStep }) => {
+export const PayPost = ({ setStep, formData, setFormData, handleSubmit }) => {
   const [packageType, setPackageType] = useState("day"); // day, week, month
   const [selectedPackage, setSelectedPackage] = useState("4"); // to VIP
   const [totalDay, setTotalDay] = useState("3");
@@ -57,6 +57,33 @@ export const PayPost = ({ setStep }) => {
 
   const [postLabel, setPostLabel] = useState(false);
   const [usePostTiktok, setUsePostTiktok] = useState(false);
+
+  useEffect(() => {
+    const calculateExpirationDate = () => {
+      const now = new Date();
+      let duration = 0;
+
+      if (packageType === "day") duration = parseInt(totalDay);
+      if (packageType === "week") duration = parseInt(totalWeek) * 7;
+      if (packageType === "month") duration = parseInt(totalMonth) * 30;
+
+      now.setDate(now.getDate() + duration);
+      return now.toISOString(); // Hoặc format bạn muốn
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      isVip: selectedPackage,
+      vipExpiryDate: calculateExpirationDate(),
+    }));
+  }, [
+    selectedPackage,
+    packageType,
+    totalDay,
+    totalWeek,
+    totalMonth,
+    setFormData,
+  ]);
 
   const days = Array.from({ length: 90 }, (_, i) => i + 3);
   const weeks = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -471,8 +498,9 @@ export const PayPost = ({ setStep }) => {
               </button>
 
               <button
-                className="w-full rounded-xl bg-red-600 text-white text-sm font-medium p-3 ms-1 whitespace-nowrap opacity-50 cursor-not-allowed"
-                type="submit"
+                className="w-full rounded-xl bg-red-600 text-white text-sm font-medium p-3 ms-1 whitespace-nowrap opacity-50 cursor-auto"
+                type="button"
+                onClick={(e) => handleSubmit(e)}
               >
                 Thanh toán <span className="ml-1">???</span>
               </button>

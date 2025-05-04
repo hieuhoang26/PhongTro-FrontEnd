@@ -73,7 +73,7 @@ export const PostCardV2 = ({ post }) => {
 
       <div className="sm:w-3/5 text-sm space-y-2">
         <h3 className="font-semibold text-base text-gray-800 line-clamp-2">
-          <a href={"/"}>{post.title}</a>
+          <a href={`/detail/${post.id}`}>{post.title}</a>
         </h3>
 
         <div className="flex items-center gap-4">

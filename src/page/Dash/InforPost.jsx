@@ -37,7 +37,6 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
     }
   }, [formData.district]);
 
-  // Hàm này sẽ chạy mỗi khi các trường liên quan thay đổi
   useEffect(() => {
     const parts = [];
 
@@ -63,7 +62,7 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
 
     setFormData((prev) => ({
       ...prev,
-      address: fullAddress,
+      fullAddress: fullAddress,
     }));
   }, [
     formData.streetNumber,
@@ -83,11 +82,13 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
       const checkboxValue = Number(value); // hoặc parseInt(value)
       setFormData((prev) => {
         if (checked) {
-          return { ...prev, features: [...prev.features, checkboxValue] };
+          return { ...prev, categories: [...prev.categories, checkboxValue] };
         } else {
           return {
             ...prev,
-            features: prev.features.filter((item) => item !== checkboxValue),
+            categories: prev.categories.filter(
+              (item) => item !== checkboxValue
+            ),
           };
         }
       });
@@ -126,14 +127,14 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
                       Loại chuyên mục <span className="text-red-500">(*)</span>
                     </label>
                     <select
-                      name="category"
+                      name="typeId"
                       className="w-full p-2 text-base border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.category}
+                      value={formData.typeId}
                       onChange={handleChange}
                       required
                     >
                       <option value="">-- Chọn loại chuyên mục --</option>
-                      {categories.map((cat) => (
+                      {types.map((cat) => (
                         <option key={cat.value} value={cat.value}>
                           {cat.label}
                         </option>
@@ -250,10 +251,10 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
                   </label>
                   <input
                     type="text"
-                    name="address"
+                    name="fullAddress"
                     className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
                     readOnly
-                    value={formData.address}
+                    value={formData.fullAddress}
                     placeholder="Địa chỉ"
                   />
                 </div>
@@ -336,7 +337,7 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
                       <select
                         name="priceUnit"
                         className="form-select p-2 border border-secondary-subtle rounded-r-lg border-gray-300 "
-                        value={formData.priceUnit}
+                        // value={formData.priceUnit}
                         onChange={handleChange}
                       >
                         <option value="0">đồng/tháng</option>
@@ -381,11 +382,11 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
                   <div key={feature.id} className="flex items-center space-x-2">
                     <input
                       className="form-checkbox h-5 w-5 text-blue-600"
-                      name="features"
+                      name="categories"
                       type="checkbox"
                       id={`feature-${feature.id}`}
                       value={feature.id}
-                      checked={formData.features.includes(feature.id)}
+                      checked={formData.categories.includes(feature.id)}
                       onChange={handleChange}
                     />
                     <label
@@ -478,7 +479,7 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
     </div>
   );
 };
-const categories = [
+const types = [
   { value: "1", label: "Phòng trọ, nhà trọ" },
   { value: "2", label: "Nhà thuê nguyên căn" },
   { value: "3", label: "Cho thuê căn hộ" },

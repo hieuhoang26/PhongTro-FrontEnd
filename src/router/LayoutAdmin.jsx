@@ -1,9 +1,14 @@
 import { Outlet } from "react-router-dom";
 
 import HeaderAdmin from "../components/Header/HeaderAdmin";
-import { SidebarAdmin } from "../components/SiderBar/Sidebar";
+import { SidebarUser } from "../components/SiderBar/SidebarUser";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { SidebarAdmin } from "../components/SiderBar/SidebarAdmin";
 
 function LayoutAdmin() {
+  const { role } = useContext(AuthContext);
+
   return (
     <div className="relative">
       {/* Header */}
@@ -12,7 +17,7 @@ function LayoutAdmin() {
       </header>
 
       <div className="flex pt-[45px]">
-        <SidebarAdmin />
+        {role === "ROLE_USER" ? <SidebarUser /> : <SidebarAdmin />}
 
         {/* Main Content */}
         <main className="flex-1 min-h-screen bg-gray-50  ml-0 xl:ml-[16.6667%]">

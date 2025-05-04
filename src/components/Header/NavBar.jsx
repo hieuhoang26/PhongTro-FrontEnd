@@ -1,23 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFilter } from "../../context/FilterContext";
 
 const navItems = [
-  { id: "PHONG_TRO", label: "Phòng trọ", href: "/" },
-  { id: "NHA_NGUYEN_CAN", label: "Nhà nguyên căn", href: "/" },
-  { id: "CAN_HO_CHUNG_CU", label: "Căn hộ chung cư", href: "/cho-thue-can-ho" },
-  { id: "CAN_HO_MINI", label: "Căn hộ mini", href: "/cho-thue-can-ho-mini" },
+  { id: 1, label: "Phòng trọ", href: "/" },
+  { id: 2, label: "Nhà nguyên căn", href: "/" },
+  { id: 3, label: "Căn hộ chung cư", href: "/" },
+  { id: 4, label: "Căn hộ mini", href: "/" },
   {
-    id: "CAN_HO_DICH_VU",
+    id: 5,
     label: "Căn hộ dịch vụ",
-    href: "/cho-thue-can-ho-dich-vu",
+    href: "/",
   },
-  { id: "O_GHEP", label: "Ở ghép", href: "/tim-nguoi-o-ghep" },
-  { id: "MAT_BANG", label: "Mặt bằng", href: "/cho-thue-mat-bang" },
-  { id: "BLOG", label: "Blog", href: "/blog.html" },
-  { id: "BANG_GIA", label: "Bảng giá dịch vụ", href: "/bang-gia-dich-vu" },
+  { id: 6, label: "Ở ghép", href: "/" },
+  { id: 7, label: "Mặt bằng", href: "/" },
 ];
 
 export default function NavBar() {
-  const [activeId, setActiveId] = useState();
+  const [activeId, setActiveId] = useState(1);
+
+  const {
+    postsData,
+    loading,
+    totalPages,
+    filterParams,
+    setFilterParams,
+    fetchPosts,
+  } = useFilter();
+
+  useEffect(() => {
+    fetchPosts({
+      typeId: activeId,
+    });
+  }, [activeId]);
 
   return (
     <div className="container hidden lg:block">
@@ -39,6 +53,38 @@ export default function NavBar() {
               </a>
             </li>
           ))}
+
+          {/* Render Blog item separately */}
+          <li className="h-full me-4">
+            <a
+              href="/blog.html"
+              title="Blog"
+              onClick={() => setActiveId("BLOG")}
+              className={`text-sm flex items-center h-full border-b-2 transition-colors duration-200 ${
+                activeId === "BLOG"
+                  ? "border-red-500 text-red-500"
+                  : "border-transparent text-gray-700 hover:text-red-500 hover:border-red-500"
+              }`}
+            >
+              Blog
+            </a>
+          </li>
+
+          {/* Render Bảng giá dịch vụ item separately */}
+          <li className="h-full me-4">
+            <a
+              href="/bang-gia-dich-vu"
+              title="Bảng giá dịch vụ"
+              onClick={() => setActiveId("BANG_GIA")}
+              className={`text-sm flex items-center h-full border-b-2 transition-colors duration-200 ${
+                activeId === "BANG_GIA"
+                  ? "border-red-500 text-red-500"
+                  : "border-transparent text-gray-700 hover:text-red-500 hover:border-red-500"
+              }`}
+            >
+              Bảng giá dịch vụ
+            </a>
+          </li>
         </ul>
       </nav>
     </div>

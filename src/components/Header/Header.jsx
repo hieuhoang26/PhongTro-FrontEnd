@@ -22,7 +22,7 @@ import { userApi } from "../../api/user";
 import UserDropdown from "../UserDropdown";
 
 const Header = () => {
-  const { isAuthenticated, userId } = useContext(AuthContext);
+  const { isAuthenticated, userId, logout } = useContext(AuthContext);
 
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
@@ -32,18 +32,21 @@ const Header = () => {
 
   const [userInfo, setUserInfo] = useState(null);
 
+  const [addInfo, setAddInfo] = useState("");
   useEffect(() => {
-    if (isAuthenticated && userId) {
-      userApi
-        .getById(userId)
-        .then((res) => {
+    const fetchUserData = async () => {
+      if (isAuthenticated && userId) {
+        try {
+          const res = await userApi.getById(userId);
           console.log("User data:", res.data);
           setUserInfo(res.data.data);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching user data:", error);
-        });
-    }
+        }
+      }
+    };
+
+    fetchUserData();
   }, [isAuthenticated, userId]);
 
   const handleOpenLocation = () => {
@@ -78,7 +81,7 @@ const Header = () => {
                     >
                       <FiMapPin className="w-4 h-4 mr-2" />
                       <span className="font-normal truncate">
-                        Tìm theo khu vực
+                        {addInfo || "Tìm theo khu vực"}
                       </span>
                     </button>
                     <button
@@ -103,7 +106,7 @@ const Header = () => {
                 </a>
 
                 <a
-                  href="/"
+                  href="/admin"
                   className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
                 >
                   <FiFolder className="w-4 h-4 mr-2" />
@@ -185,6 +188,7 @@ const Header = () => {
       <LocationModal
         isOpen={showLocation}
         onClose={() => setShowLocation(!showLocation)}
+        setAddInfo={setAddInfo}
       />
       <FilterModal isOpen={showFilter} onClose={() => setShowFilter(false)} />
     </div>

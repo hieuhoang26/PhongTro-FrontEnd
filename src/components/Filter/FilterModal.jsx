@@ -32,12 +32,18 @@ const FilterModal = ({ isOpen, onClose }) => {
     setCity,
     setDistrict,
     setWard,
+    fetchPosts,
   } = useFilter();
 
   const handleToggleAmenity = (id) => {
     setAmenities((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  const handleApply = () => {
+    fetchPosts();
+    onClose();
   };
 
   return (
@@ -231,7 +237,7 @@ const FilterModal = ({ isOpen, onClose }) => {
             {/* Apply Button */}
             <div className="flex justify-center">
               <button
-                // onClick={onClose}
+                onClick={handleApply}
                 className="bg-red-500 hover:bg-red-600 text-white text-base w-full p-2 rounded-2xl"
               >
                 Áp dụng
