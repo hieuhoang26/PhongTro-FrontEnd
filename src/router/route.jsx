@@ -13,6 +13,8 @@ import { PostListUser } from "../page/Dash/User/PostListUser";
 import { PostModal } from "../components/Admin/Modal/PostModal";
 import PendingPost from "../page/Dash/Admin/PendingPost";
 import { PostListAdmin } from "../page/Dash/Admin/PostListAdmin";
+import { ChatApp } from "../page/Chat/ChatApp";
+import PriceList from "../page/PriceList";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ export const router = createBrowserRouter([
         path: "/quen-mat-khau",
         element: <ForgotPass />,
       },
+      {
+        path: "/bang-gia",
+        element: <PriceList />,
+      },
+      // {
+      //   path: "/chat",
+      //   element: <WebSocketChatTest />,
+      // },
     ],
   },
   {
@@ -63,5 +73,9 @@ export const router = createBrowserRouter([
         element: <PendingPost />,
       },
     ],
+  },
+  {
+    path: "/chat-app",
+    element: <ChatApp />,
   },
 ]);

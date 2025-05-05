@@ -30,7 +30,7 @@ export const FilterProvider = ({ children }) => {
     sortBy: "isVip",
     sortDirection: "desc",
   });
-  console.log("filterParams", filterParams);
+  // console.log("filterParams", filterParams);
 
   useEffect(() => {
     const newFilterParams = {

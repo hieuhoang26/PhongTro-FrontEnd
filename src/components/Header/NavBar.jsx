@@ -73,7 +73,7 @@ export default function NavBar() {
           {/* Render Bảng giá dịch vụ item separately */}
           <li className="h-full me-4">
             <a
-              href="/bang-gia-dich-vu"
+              href="/bang-gia"
               title="Bảng giá dịch vụ"
               onClick={() => setActiveId("BANG_GIA")}
               className={`text-sm flex items-center h-full border-b-2 transition-colors duration-200 ${

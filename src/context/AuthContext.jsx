@@ -29,7 +29,7 @@ const AuthProvider = ({ children }) => {
   const login = (data) => {
     setUserId(data.id);
     setRole(data.role);
-    setProfileToSession({ id: data.id, role: data.role });
+    setProfileToSession({ id: data.id, role: data.role, phone: data.phone });
     setAccessTokenToSession(data.accessToken);
     setRefreshTokenToSession(data.refreshToken);
     setIsAuthenticated(true);
