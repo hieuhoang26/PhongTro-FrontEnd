@@ -70,8 +70,12 @@ export const FilterProvider = ({ children }) => {
 
     setFilterParams(newFilterParams);
     // fetchPosts();
-    fetchPosts(newFilterParams);
+    // fetchPosts(newFilterParams);
   }, [type, price, area, amenities, city, district, ward]);
+
+  useEffect(() => {
+    fetchPosts(filterParams);
+  }, [filterParams]);
 
   const [postsData, setPostsData] = useState([]);
   const [loading, setLoading] = useState(false);

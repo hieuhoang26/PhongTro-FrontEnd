@@ -29,14 +29,9 @@ const tabs = [
   { label: "Có video", value: "video", hasVideo: true },
 ];
 
-export default function Home() {
+export default function Home({ typeId }) {
   const [activeTab, setActiveTab] = useState("mac-dinh");
 
-  // const [postsData, setPostsData] = useState([]);
-  // const [loading, setLoading] = useState(false);
-  // const [page, setPage] = useState(0);
-  // const [size] = useState(3);
-  // const [totalPages, setTotalPages] = useState(0);
   const {
     postsData,
     loading,
@@ -51,16 +46,13 @@ export default function Home() {
   } = useFilter();
 
   useEffect(() => {
-    fetchPosts();
-  }, [filterParams.page]);
-
-  // useEffect(() => {
-  //   fetchPosts({
-  //     isVip: 1,
-  //     sortBy: "createdAt",
-  //     sortDirection: "desc",
-  //   });
-  // }, [filterParams.page]);
+    setFilterParams((prev) => ({
+      ...prev,
+      typeId: typeId || 1,
+      page: 0,
+    }));
+    // fetchPosts();
+  }, [typeId]);
 
   const handlePageChange = (newPage) => {
     setFilterParams((prev) => ({
@@ -134,15 +126,9 @@ export default function Home() {
 
               {/* pagination */}
 
-              {/* <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              /> */}
               <Pagination
                 currentPage={filterParams.page + 1}
                 totalPages={totalPages}
-                // onPageChange={(newPage) => setPage(newPage - 1)}
                 onPageChange={handlePageChange}
               />
             </>

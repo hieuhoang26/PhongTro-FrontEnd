@@ -23,6 +23,8 @@ import {
 import { amenitiesList } from "../utils/contant";
 import { postApi } from "../api/post";
 import RelatedPost from "../components/RelatedPost";
+import { FaPhoneAlt, FaStar } from "react-icons/fa";
+import { LuMessageSquareMore } from "react-icons/lu";
 
 export default function Detail() {
   const { id } = useParams();
@@ -36,7 +38,6 @@ export default function Detail() {
         const response = await postApi.detail(id);
         setDetail(response.data.data);
         console.log(response.data.data);
-        console.log(formatPrice(response.data.data.price));
         setLoading(false);
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
@@ -63,33 +64,70 @@ export default function Detail() {
         <div className="flex gap-6">
           {/* main */}
           <div className="w-7/10 ">
-            <MediaSlider />
+            <MediaSlider mediaList={detail.images} />
 
             {/* Info */}
             <div className="bg-white shadow-sm rounded-xl p-4 mb-3 mt-3">
               <header className="border-b pb-4 mb-4 border-[#f1f1f1]">
-                <div className="inline-flex items-center text-[11px] font-normal uppercase mb-1 px-2 py-1 rounded bg-[#e41b23] text-white">
-                  <div className="mr-1">⭐️⭐️⭐️⭐️⭐️</div>
-                  Tin VIP nổi bật
+                <div
+                  className={`inline-flex items-center text-sm font-normal uppercase mb-1 px-2 py-1 rounded text-white ${
+                    detail.isVip === 5
+                      ? "bg-[#e41b23]"
+                      : detail.isVip === 4
+                      ? "bg-pink-500"
+                      : detail.isVip === 3
+                      ? "bg-orange-500"
+                      : detail.isVip === 2
+                      ? "bg-blue-500"
+                      : ""
+                  }`}
+                >
+                  <div className="flex">
+                    {[...Array(detail.isVip === 3 ? 4 : detail.isVip)].map(
+                      (_, i) => (
+                        <FaStar key={i} className="text-yellow-300 mx-[1px]" />
+                      )
+                    )}
+                  </div>
+                  {detail.isVip === 5
+                    ? "Tin VIP nổi bật"
+                    : detail.isVip === 4
+                    ? "Tin VIP 1"
+                    : detail.isVip === 3
+                    ? "Tin VIP 2"
+                    : detail.isVip === 2
+                    ? "Tin VIP 3"
+                    : ""}
                 </div>
-                <h1 className="text-[20px] font-semibold leading-snug mb-2 text-[#e41b23]">
+                <h1
+                  className={` leading-snug mb-2 ${
+                    detail.isVip === 5
+                      ? "text-[#e41b23] text-[20px] font-semibold uppercase"
+                      : detail.isVip === 4
+                      ? "text-pink-500 text-[20px] font-semibold uppercase"
+                      : detail.isVip === 3
+                      ? "text-orange-500 text-[20px] font-semibold uppercase"
+                      : detail.isVip === 2
+                      ? "text-blue-500 text-[20px] font-semibold uppercase"
+                      : "font-semibold"
+                  }`}
+                >
                   {detail.title}
                 </h1>
-                <address className="not-italic leading-snug text-gray-700">
-                  <FiMapPin />
-                  {detail?.address} -
-                  <span className="text-blue-600 underline cursor-pointer ml-1">
+                <address className="not-italic text-sm leading-snug text-gray-700 flex items-center gap-1">
+                  <FiMapPin className="flex-shrink-0" />
+                  <span>{detail?.address}</span>
+                  {/* <span className="text-blue-600 underline cursor-pointer ml-1">
                     Xem bản đồ
-                  </span>
+                  </span> */}
                 </address>
+
                 <div className="flex justify-between mt-2 text-sm text-gray-700">
                   <div className="flex gap-3 items-center">
                     <span className="text-red-600 font-bold text-lg">
                       {formatPrice(detail?.price)}
                     </span>
-
-                    <span>{formatArea(detail.area)} m²</span>
-
+                    -<span>{formatArea(detail.area)} m²</span>-
                     <time title="Thứ 2, 11:36 21/04/2025">
                       {formatTimeAgo(detail.createdAt)}
                     </time>
@@ -135,7 +173,15 @@ export default function Detail() {
                     <tr>
                       <td className="py-1 pr-2 text-gray-500">Gói tin:</td>
                       <td className="py-1 text-red-500">
-                        Tin VIP nổi bật(notdone)
+                        {detail.isVip === 5
+                          ? "Tin VIP nổi bật"
+                          : detail.isVip === 4
+                          ? "Tin VIP 1"
+                          : detail.isVip === 3
+                          ? "Tin VIP 2"
+                          : detail.isVip === 2
+                          ? "Tin VIP 3"
+                          : ""}
                       </td>
                       <td className="py-1 pr-2 text-gray-500">Ngày hết hạn:</td>
                       <td className="py-1">
@@ -193,7 +239,9 @@ export default function Detail() {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <div className="text-lg font-medium">Lê Thị Hồng Tâm</div>
+                      <div className="text-lg font-medium">
+                        {detail?.nameContact}
+                      </div>
                       <div className="text-xs text-gray-500 flex items-center">
                         <span className="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span>
                         Đang hoạt động
@@ -208,7 +256,8 @@ export default function Detail() {
                         href="tel:0976514555"
                         className="bg-green-600 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2"
                       >
-                        <i className="bi bi-telephone-fill"></i> 0976514555
+                        <FaPhoneAlt />
+                        {detail?.phoneContact}
                       </a>
                       <a
                         href="https://zalo.me/0976514555"
@@ -216,7 +265,7 @@ export default function Detail() {
                         rel="noreferrer"
                         className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2"
                       >
-                        <i className="bi bi-chat-text"></i> Nhắn Zalo
+                        <LuMessageSquareMore /> Nhắn Zalo
                       </a>
                     </div>
                   </div>
@@ -257,7 +306,9 @@ export default function Detail() {
                     alt="Lê Thị Hồng Tâm"
                   />
                   <div className="mt-3 text-center">
-                    <span className="text-lg font-medium">Lê Thị Hồng Tâm</span>
+                    <span className="text-lg font-medium">
+                      {detail.username}
+                    </span>
                     <div className="flex justify-center text-xs">
                       <GoDotFill className="mt-1 mr-1" />
                       <span>Đang hoạt động</span>
@@ -269,15 +320,17 @@ export default function Detail() {
                   </div>
                 </div>
                 <div className="flex flex-col items-center ">
-                  <button className="bg-white text-black px-4 py-2 rounded-lg border border-gray-300 shadow-sm hover:bg-gray-50 font-medium w-full">
-                    0976514555
-                  </button>
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 font-medium w-full"
-                    target="_blank"
-                  >
-                    Nhắn Zalo
-                  </button>
+                  <div className="space-y-2 w-full">
+                    <button className="flex items-center justify-center gap-2 bg-green-500 text-black px-4 py-2 rounded-lg border border-gray-300 shadow-sm hover:bg-gray-50 font-medium w-full">
+                      <FaPhoneAlt className="text-base" />
+                      <span>{detail.phone}</span>
+                    </button>
+
+                    <button className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 font-medium w-full">
+                      <LuMessageSquareMore className="text-base" />
+                      <span>Nhắn Zalo</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex justify-between mt-3 mb-3 gap-2">

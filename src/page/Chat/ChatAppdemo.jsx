@@ -13,21 +13,22 @@ export const ChatApp = () => {
 
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [currentChat, setCurrentChat] = useState(null);
+  const [currentChat, setCurrentChat] = useState(null); // User nhận
+  //   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
   const messagesEndRef = useRef(null);
   const stompClient = useRef(null);
 
   const token = getAccessTokenFromSession();
-  const profile = getProfileFromSession();
-  const phone = profile?.phone;
+
+  //   console.log("user", userId);
+  //   console.log("curr", currentChat);
 
   // Initialize WebSocket connection
   useEffect(() => {
-    if (!userId) return;
-
     const socket = new SockJS("http://localhost:8080/ws");
     stompClient.current = new Client({
       connectHeaders: {
@@ -40,7 +41,7 @@ export const ChatApp = () => {
       onConnect: () => {
         console.log("WebSocket Connected");
         setIsConnected(true);
-        setupSubscriptions();
+        // setupSubscriptions();
       },
       onDisconnect: () => {
         console.log("WebSocket Disconnected");
@@ -54,25 +55,9 @@ export const ChatApp = () => {
     return () => {
       if (stompClient.current) {
         stompClient.current.deactivate();
+        console.log("[WebSocket] STOMP client deactivated");
       }
     };
-  }, [userId]);
-
-  const setupSubscriptions = useCallback(() => {
-    if (!stompClient.current || !phone) return;
-
-    // Subscribe to personal message queue
-    stompClient.current.subscribe(`/user/queue/messages`, (message) => {
-      console.log("Message received:", message.body);
-      const msg = JSON.parse(message.body);
-      setMessages((prev) => [
-        ...prev,
-        {
-          ...msg,
-          incoming: msg.senderId !== phone,
-        },
-      ]);
-    });
   }, [userId]);
 
   // Load contacts
@@ -81,7 +66,7 @@ export const ChatApp = () => {
 
     const fetchContacts = async () => {
       try {
-        const data = await chatApi.fetchContacts(userId);
+        const data = await chatApi.fetchUserConversations(userId);
         setContacts(data.data);
       } catch (error) {
         console.error("Error fetching contacts:", error);
@@ -92,44 +77,66 @@ export const ChatApp = () => {
   }, [userId]);
 
   // Load messages when chat changes
+  // Khi chọn người chat => lấy conversationId + messages + subscribe
   useEffect(() => {
-    if (!currentChat?.id || !phone) return;
-
-    const fetchMessages = async () => {
+    const loadConversation = async () => {
+      if (!currentChat || !userId) return;
       try {
-        const data = await chatApi.fetchConversation(phone, currentChat.phone);
+        const res = await chatApi.getOrCreateConversation(
+          userId, // id gửi
+          currentChat.id // id nhận
+        );
+        // console.log("Conversation", res.data);
+        const conversationId = res.data.id;
 
+        // Lấy tin nhắn
+        const msgRes = await chatApi.fetchMessages(conversationId);
+
+        // console.log("mess", msgRes.data);
         setMessages(
-          data.data.map((msg) => ({
+          msgRes.data.map((msg) => ({
             ...msg,
-            incoming: msg.senderId != phone,
+            incoming: msg.senderId != userId,
           }))
         );
-      } catch (error) {
-        console.error("Error fetching messages:", error);
+
+        // Subscribe WebSocket
+        stompClient.current.subscribe(
+          `/topic/conversations-${conversationId}`,
+          (message) => {
+            const msg = JSON.parse(message.body);
+            setMessages((prev) => [
+              ...prev,
+              {
+                ...msg,
+                incoming: msg.senderId != userId,
+              },
+            ]);
+          }
+        );
+        console.log(
+          `[WebSocket] Subscribed to /topic/conversations/${conversationId}`
+        );
+      } catch (err) {
+        console.error("Error loading conversation:", err);
       }
     };
 
-    fetchMessages();
+    loadConversation();
   }, [currentChat, userId]);
 
   // Send new message
   const handleSendMessage = useCallback(() => {
-    if (
-      !newMessage.trim() ||
-      !currentChat?.id ||
-      !stompClient.current?.connected
-    )
+    if (!newMessage.trim() || !currentChat || !stompClient.current?.connected)
       return;
 
     const message = {
-      senderId: phone,
-      receiverId: currentChat.phone,
+      senderId: userId,
+      receiverId: currentChat.id,
       content: newMessage,
       contentType: "text",
     };
 
-    // Optimistic update
     setMessages((prev) => [
       ...prev,
       {
@@ -139,14 +146,13 @@ export const ChatApp = () => {
       },
     ]);
 
-    // Send via WebSocket
     stompClient.current.publish({
       destination: "/app/chat.send",
       body: JSON.stringify(message),
     });
 
     setNewMessage("");
-  }, [newMessage, userId, currentChat?.phone]);
+  }, [newMessage, userId, currentChat]);
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -174,32 +180,46 @@ export const ChatApp = () => {
 
         {/* Contact List */}
         <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
-          {contacts.map((contact) => (
-            <div
-              key={contact.id}
-              onClick={() => setCurrentChat(contact)}
-              className={`flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md ${
-                currentChat?.id === contact.id ? "bg-gray-200" : ""
-              }`}
-            >
-              <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
-                <img
-                  src={`https://placehold.co/200x/${contact.color}/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato`}
-                  alt="User Avatar"
-                  className="w-12 h-12 rounded-full"
-                />
+          {contacts.map((contact) => {
+            // Xác định user hiển thị (user không null)
+            const displayUser = contact.user2 ? contact.user2 : contact.user1;
+            // Lấy thông tin tin nhắn cuối
+            const lastMessage =
+              contact.lastMessage?.content || "No messages yet";
+
+            return (
+              <div
+                key={contact.id}
+                onClick={() => setCurrentChat(displayUser)}
+                className={`flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md ${
+                  currentChat?.id === contact.id ? "bg-gray-200" : ""
+                }`}
+              >
+                <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
+                  <img
+                    // src={
+                    //   displayUser.avatarUrl ||
+                    //   `https://placehold.co/200x/cccccc/ffffff.svg?text=${displayUser.name.charAt(
+                    //     0
+                    //   )}&font=Lato`
+                    // }
+                    src={`https://placehold.co/200x/${contact.color}/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato`}
+                    alt="User Avatar"
+                    className="w-12 h-12 rounded-full"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold">{displayUser.name}</h2>
+                  <p className="text-gray-600 truncate">{lastMessage}</p>
+                </div>
+                {contact.unreadCount > 0 && (
+                  <span className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {contact.unreadCount}
+                  </span>
+                )}
               </div>
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold">{contact.name}</h2>
-                <p className="text-gray-600 truncate">{contact.lastMessage}</p>
-              </div>
-              {contact.unreadCount > 0 && (
-                <span className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {contact.unreadCount}
-                </span>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -230,7 +250,7 @@ export const ChatApp = () => {
                       <div className="flex max-w-96 bg-white rounded-lg p-3 gap-3">
                         <p className="text-gray-700">{message.content}</p>
                         <span className="text-xs text-gray-500 self-end">
-                          {new Date(message.timestamp).toLocaleTimeString([], {
+                          {new Date(message.sentAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
@@ -242,7 +262,7 @@ export const ChatApp = () => {
                       <div className="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
                         <p>{message.content}</p>
                         <span className="text-xs text-indigo-200 self-end">
-                          {new Date(message.timestamp).toLocaleTimeString([], {
+                          {new Date(message.sentAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}

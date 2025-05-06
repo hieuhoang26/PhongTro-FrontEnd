@@ -7,15 +7,15 @@ export const URL_FETCH_CONVERSATION = (userAId, userBId) =>
 
 // export const URL_MARK_MESSAGE_READ = (messageId) =>
 //   `/api/messages/${messageId}/read`;
-
 export const chatApi = {
-  fetchContacts(userId) {
-    return http.get(`chat/contacts/${userId}`);
+  fetchUserConversations(userId) {
+    return http.get(`/chat/conversation/list?userId=${userId}`);
   },
-  fetchConversation(userAId, userBId) {
-    return http.get(`chat/conversation/${userAId}/${userBId}`);
+  getOrCreateConversation(userA, userB) {
+    return http.get(`/chat/conversation?userA=${userA}&userB=${userB}`);
   },
-  //   markMessageAsRead(messageId) {
-  //     return http.put(URL_MARK_MESSAGE_READ(messageId));
-  //   },
+
+  fetchMessages(conversationId) {
+    return http.get(`/chat/messages?conversationId=${conversationId}`);
+  },
 };

@@ -13,8 +13,8 @@ import { PostListUser } from "../page/Dash/User/PostListUser";
 import { PostModal } from "../components/Admin/Modal/PostModal";
 import PendingPost from "../page/Dash/Admin/PendingPost";
 import { PostListAdmin } from "../page/Dash/Admin/PostListAdmin";
-import { ChatApp } from "../page/Chat/ChatApp";
 import PriceList from "../page/PriceList";
+import { ChatApp } from "../page/Chat/ChatAppdemo";
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +23,36 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <Home typeId={1} />,
+      },
+      {
+        path: "phong-tro",
+        // index: true,
+        element: <Home typeId={1} />,
+      },
+      {
+        path: "nha-nguyen-can",
+        element: <Home typeId={2} />,
+      },
+      {
+        path: "can-ho-chung-cu",
+        element: <Home typeId={3} />,
+      },
+      {
+        path: "can-ho-mini",
+        element: <Home typeId={4} />,
+      },
+      {
+        path: "can-ho-dich-vu",
+        element: <Home typeId={5} />,
+      },
+      {
+        path: "o-ghep",
+        element: <Home typeId={6} />,
+      },
+      {
+        path: "mat-bang",
+        element: <Home typeId={7} />,
       },
       {
         path: "/detail/:id",

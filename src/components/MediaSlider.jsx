@@ -2,21 +2,21 @@ import { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { GoVideo } from "react-icons/go";
 
-const mediaList = [
-  "https://static123.com/watch?v=7277777",
+// const mediaList = [
+//   "https://static123.com/watch?v=7277777",
 
-  "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460390253087-4dfd2ae9beff3b06c424fcd14b3b21fa_1744682284.jpg",
+//   "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460390253087-4dfd2ae9beff3b06c424fcd14b3b21fa_1744682284.jpg",
 
-  "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460391599667-5d38e9207841cffb68d69e346a93fdd4_1744682294.jpg",
+//   "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460391599667-5d38e9207841cffb68d69e346a93fdd4_1744682294.jpg",
 
-  "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460391606176-22e4649aa773e24628694cd405460c35_1744682294.jpg",
-];
+//   "https://pt123.cdn.static123.com/images/thumbs/900x600/fit/2025/04/15/z6460391606176-22e4649aa773e24628694cd405460c35_1744682294.jpg",
+// ];
 
 const isVideo = (url) => {
   return url.match(/\.(mp4|webm)$/i) || url.includes("watch?");
 };
 
-export default function MediaSlider({ images }) {
+export default function MediaSlider({ mediaList }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const prevSlide = () => {
@@ -62,7 +62,7 @@ export default function MediaSlider({ images }) {
       </button>
 
       {/* Thumbnails */}
-      <div className="flex justify-center items-center gap-2 mt-2 p-2 bg-white rounded-b-md">
+      <div className="flex justify-center items-center gap-2 p-2 bg-white rounded-b-md">
         {mediaList.map((item, index) => (
           <button
             key={index}
