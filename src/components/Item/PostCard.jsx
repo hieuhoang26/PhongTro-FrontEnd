@@ -4,6 +4,7 @@ import { CiHeart } from "react-icons/ci";
 
 import logoUser from "../../assets/default_user.svg";
 import { formatArea, formatPrice, formatTimeAgo } from "../../utils/other";
+import { FaStar } from "react-icons/fa";
 
 export const PostCard = ({ post }) => {
   const [liked, setLiked] = useState(false);
@@ -41,8 +42,20 @@ export const PostCard = ({ post }) => {
       </div>
 
       <div className="sm:w-3/5 text-sm space-y-2">
-        <h3 className="font-semibold text-base text-gray-800 line-clamp-2">
-          <a href={`/detail/${post.id}`}>{post.title}</a>
+        <h3 className="font-semibold text-base uppercase">
+          <a
+            href={`/detail/${post.id}`}
+            className={`hover:underline block ${
+              post.isVip === 2 ? "text-blue-500" : ""
+            }`}
+          >
+            <span className="inline-flex mr-1">
+              {[...Array(post.isVip || 0)].map((_, i) => (
+                <FaStar key={i} className="text-yellow-300" size={14} />
+              ))}
+            </span>
+            {post.title}
+          </a>
         </h3>
 
         <div className="flex items-center gap-4">
@@ -61,7 +74,7 @@ export const PostCard = ({ post }) => {
           {post.description}
         </p>
 
-        <div className="flex justify-between items-center mt-5">
+        <div className="flex justify-between items-center mt-2">
           <div className="flex items-center gap-2">
             <img src={logoUser} alt="user" className="w-8 h-8 rounded-full" />
             <div>

@@ -5,17 +5,21 @@ import left from "../assets/banner-thuecanho.jpg";
 import right from "../assets/bds123_120_300.gif";
 import classNames from "classnames";
 import Footer from "../components/Footer/Footer";
+import WhyChoose from "../components/Footer/WhyChoose";
+import SupportSection from "../components/Footer/SupportSection";
+import AboutPhongTroSection from "../components/Footer/AboutPhongTroSection";
 
 function Layout() {
   const location = useLocation();
   const isBangGiaPage = location.pathname === "/bang-gia";
+  const isPhongTroPage = location.pathname === "/";
 
   const className = classNames("pt-24 px-4 max-w-full mx-auto", {
     "xl:max-w-[calc(100%-280px*2)]": !isBangGiaPage,
     "2xl:max-w-[calc(100%-240px*2)]": !isBangGiaPage,
     "[@media(min-width:1920px)]:max-w-[calc(100%-400px*2)]": !isBangGiaPage,
   });
-  const classNameFooter = classNames("pt-24 max-w-full mx-auto", {
+  const classNameFooter = classNames("pt-4 max-w-full mx-auto", {
     "xl:max-w-[calc(100%-280px*2)] px-2": !isBangGiaPage,
     "2xl:max-w-[calc(100%-240px*2)]": !isBangGiaPage,
     "[@media(min-width:1920px)]:max-w-[calc(100%-400px*2)]": !isBangGiaPage,
@@ -30,15 +34,16 @@ function Layout() {
       {/* ≥ 1536px  */}
       {/* ≥ 1920px  */}
 
-      <main
-        // className="pt-24 px-4 max-w-full mx-auto
-        // xl:max-w-[calc(100%-280px*2)]
-        // 2xl:max-w-[calc(100%-240px*2)]
-        // [@media(min-width:1920px)]:max-w-[calc(100%-400px*2)]"
-        className={className}
-      >
+      <main className={className}>
         <Outlet />
       </main>
+      {!isBangGiaPage && (
+        <div className={className}>
+          <AboutPhongTroSection />
+          <WhyChoose />
+          <SupportSection />
+        </div>
+      )}
       <footer className={classNameFooter}>
         <Footer />
       </footer>

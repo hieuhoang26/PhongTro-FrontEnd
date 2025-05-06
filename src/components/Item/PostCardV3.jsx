@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BiHeart, BiSolidHeart } from "react-icons/bi";
-import { FaPhoneAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaStar } from "react-icons/fa";
 
 import logoUser from "../../assets/default_user.svg";
 import { formatArea, formatPrice, formatTimeAgo } from "../../utils/other";
@@ -80,7 +80,17 @@ export const PostCardV3 = ({ post }) => {
       <div className="flex flex-col justify-between text-sm">
         <div className="space-y-1">
           <h3 className="font-semibold text-base text-red-600 uppercase">
-            <a href={`/detail/${post.id}`}>{post.title}</a>
+            <a
+              href={`/detail/${post.id}`}
+              className="text-red-600 hover:underline block"
+            >
+              <span className="inline-flex mr-1">
+                {[...Array(post.isVip || 5)].map((_, i) => (
+                  <FaStar key={i} className="text-yellow-300" size={14} />
+                ))}
+              </span>
+              {post.title}
+            </a>
           </h3>
           <div className="flex items-center gap-4">
             <span className="text-green-600 font-semibold text-base">

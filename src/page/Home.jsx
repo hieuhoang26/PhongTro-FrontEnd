@@ -125,9 +125,9 @@ export default function Home() {
           ) : (
             <>
               {postsData.map((item) => {
-                if (item.isVip === 3)
+                if (item.isVip === 5)
                   return <PostCardV3 key={item.id} post={item} />;
-                if (item.isVip === 2)
+                if (item.isVip === 4 || item.isVip == 3)
                   return <PostCardV2 key={item.id} post={item} />;
                 return <PostCard key={item.id} post={item} />;
               })}

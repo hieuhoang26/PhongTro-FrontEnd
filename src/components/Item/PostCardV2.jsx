@@ -3,6 +3,7 @@ import { BiHeart, BiSolidHeart } from "react-icons/bi";
 import { CiHeart } from "react-icons/ci";
 import logoUser from "../../assets/default_user.svg";
 import { formatArea, formatPrice, formatTimeAgo } from "../../utils/other";
+import { FaStar } from "react-icons/fa";
 
 export const PostCardV2 = ({ post }) => {
   const [liked, setLiked] = useState(false);
@@ -61,9 +62,9 @@ export const PostCardV2 = ({ post }) => {
           </div>
 
           {/* Badge */}
-          <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
+          {/* <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
             <i className="bi bi-star-fill mr-1"></i> Tin VIP
-          </div>
+          </div> */}
           <div className="absolute bottom-2 left-2 bg-black/50 text-white text-sm px-2 py-0.5 rounded">
             <i className="bi bi-camera-fill mr-1"></i>
             {post.images.length}
@@ -72,8 +73,24 @@ export const PostCardV2 = ({ post }) => {
       </div>
 
       <div className="sm:w-3/5 text-sm space-y-2">
-        <h3 className="font-semibold text-base text-gray-800 line-clamp-2">
-          <a href={`/detail/${post.id}`}>{post.title}</a>
+        <h3 className="font-semibold text-base uppercase">
+          <a
+            href={`/detail/${post.id}`}
+            className={`hover:underline block ${
+              post.isVip === 4
+                ? "text-pink-500"
+                : post.isVip === 3
+                ? "text-orange-500"
+                : ""
+            }`}
+          >
+            <span className="inline-flex mr-1">
+              {[...Array(post.isVip)].map((_, i) => (
+                <FaStar key={i} className="text-yellow-300" size={14} />
+              ))}
+            </span>
+            {post.title}
+          </a>
         </h3>
 
         <div className="flex items-center gap-4">
