@@ -1,17 +1,38 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiHeart, BiSolidHeart } from "react-icons/bi";
 import { FaPhoneAlt, FaStar } from "react-icons/fa";
 
 import logoUser from "../../assets/default_user.svg";
 import { formatArea, formatPrice, formatTimeAgo } from "../../utils/other";
+import { AuthContext } from "../../context/AuthContext";
+import { favorApi } from "../../api/favor";
 
 export const PostCardV3 = ({ post }) => {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(post.isLike);
+
+  useEffect(() => {
+    setLiked(post.isLike || false);
+  }, [post.isLike]);
+
+  const { userId } = useContext(AuthContext);
+
   const placeholder = "/placeholder-image.jpg";
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    // Gọi API lưu tin hoặc bỏ lưu tại đây nếu cần
+  const toggleLike = async () => {
+    if (!userId) {
+      console.log("Please login to like posts");
+      return;
+    }
+    try {
+      if (liked) {
+        await favorApi.unLikePost(post.id, userId);
+      } else {
+        await favorApi.likePost(post.id, userId);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   const getImage = (index) => {

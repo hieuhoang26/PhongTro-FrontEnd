@@ -3,6 +3,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { AuthContext } from "../../context/AuthContext";
 import { chatApi } from "../../api/socket";
+import { IoSearch } from "react-icons/io5";
 import {
   getAccessTokenFromSession,
   getProfileFromSession,
@@ -21,6 +22,12 @@ export const ChatApp = () => {
 
   const messagesEndRef = useRef(null);
   const stompClient = useRef(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchInputRef = useRef(null);
 
   const token = getAccessTokenFromSession();
 
@@ -154,12 +161,85 @@ export const ChatApp = () => {
     setNewMessage("");
   }, [newMessage, userId, currentChat]);
 
+  // Search users - chỉ gọi khi click icon hoặc nhấn Enter
+  const handleSearch = useCallback(async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const response = await chatApi.searchUsers(searchQuery);
+      // API trả về 1 user object thay vì array
+      const user = response.data;
+      // Kiểm tra nếu là user hiện tại
+      if (user.id == userId) {
+        setSearchResults([]);
+        setShowSearchResults(true);
+      } else {
+        // Kiểm tra user đã có trong danh bạ chưa
+        // const isExistingContact = contacts.some(
+        //   (contact) =>
+        //     contact.user1?.id === user.id || contact.user2?.id === user.id
+        // );
+        // if (isExistingContact) {
+        //   setSearchResults([]);
+        //   setShowSearchResults(true);
+        // } else {
+        // Chuyển thành array để phù hợp với cách render hiện tại
+        setSearchResults([user]);
+        setShowSearchResults(true);
+        // setIsSearching(false);
+        // }
+      }
+    } catch (error) {
+      console.error("Error searching users:", error);
+      setSearchResults([]);
+      setShowSearchResults(true); // Hiển thị dropdown để show thông báo lỗi
+    } finally {
+      setIsSearching(false);
+    }
+  }, [searchQuery, userId, contacts]);
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target)
+      ) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Start chat with a new user
+  const startNewChat = (user) => {
+    setCurrentChat(user);
+    setSearchQuery("");
+    setSearchResults([]);
+    setShowSearchResults(false);
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
+
+  // const handleSearchKeyPress = (e) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     handleSearch();
+  //   }
+  // };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -177,7 +257,99 @@ export const ChatApp = () => {
             <span>{isConnected ? "Online" : "Offline"}</span>
           </div>
         </header>
+        {/* Search Bar */}
+        <div
+          className="p-3 border-b border-gray-300 relative"
+          ref={searchInputRef}
+        >
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchResults(false); // Ẩn kết quả khi đang gõ
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+              className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
+            />
+            <button
+              onClick={handleSearch}
+              disabled={isSearching || !searchQuery.trim()}
+              className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                isSearching || !searchQuery.trim()
+                  ? "text-gray-400"
+                  : "text-gray-600 hover:text-indigo-600"
+              }`}
+            >
+              {isSearching ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <IoSearch className="h-5 w-5" />
+              )}
+            </button>
+          </div>
 
+          {/* Chỉ hiển thị khi có hành động search */}
+          {showSearchResults && (
+            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+              {searchResults.length > 0 ? (
+                searchResults.map((user) => (
+                  <div
+                    key={user.id}
+                    onClick={() => {
+                      startNewChat(user);
+                      setShowSearchResults(false); // Ẩn kết quả sau khi chọn
+                    }}
+                    className="p-3 hover:bg-gray-100 cursor-pointer flex items-center"
+                  >
+                    <img
+                      src={`https://placehold.co/200x/cccccc/ffffff.svg?text=${user.name.charAt(
+                        0
+                      )}&font=Lato`}
+                      alt="User Avatar"
+                      className="w-8 h-8 rounded-full mr-2"
+                    />
+                    <div>
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-3 text-gray-500">
+                  {isSearching
+                    ? "Searching..."
+                    : "User not found or already in contacts"}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         {/* Contact List */}
         <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
           {contacts.map((contact) => {

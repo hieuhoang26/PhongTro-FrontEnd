@@ -20,6 +20,10 @@ import LocationModal from "../Filter/LocationModal";
 import { AuthContext } from "../../context/AuthContext";
 import { userApi } from "../../api/user";
 import UserDropdown from "../UserDropdown";
+import {
+  IoChatboxEllipsesOutline,
+  IoChatbubbleEllipsesOutline,
+} from "react-icons/io5";
 
 const Header = () => {
   const { isAuthenticated, userId, logout } = useContext(AuthContext);
@@ -98,13 +102,20 @@ const Header = () => {
             <div className="flex items-center">
               <div className="hidden lg:flex">
                 <a
-                  href="/"
+                  href="/tin-luu"
                   className="flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100"
                 >
                   <FiHeart className="w-4 h-4 mr-2" />
                   <span>Tin đã lưu</span>
                 </a>
 
+                <a
+                  href="/chat-app"
+                  className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
+                >
+                  <IoChatboxEllipsesOutline className="w-4 h-4 mr-2" />
+                  <span>Tin nhắn</span>
+                </a>
                 <a
                   href="/admin"
                   className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"

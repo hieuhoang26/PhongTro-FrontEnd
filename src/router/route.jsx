@@ -15,6 +15,7 @@ import PendingPost from "../page/Dash/Admin/PendingPost";
 import { PostListAdmin } from "../page/Dash/Admin/PostListAdmin";
 import PriceList from "../page/PriceList";
 import { ChatApp } from "../page/Chat/ChatAppdemo";
+import SavedPost from "../page/SavedPost";
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
       {
         path: "/bang-gia",
         element: <PriceList />,
+      },
+      {
+        path: "/tin-luu",
+        element: <SavedPost />,
       },
       // {
       //   path: "/chat",

@@ -34,8 +34,6 @@ export default function NavBar() {
         location.pathname === item.href || location.pathname === `${item.href}/`
     )?.id || filterParams.typeId;
 
-  console.log("active", activeId);
-  console.log("type", filterParams.typeId);
   // const [activeId, setActiveId] = useState(1);
 
   // useEffect(() => {

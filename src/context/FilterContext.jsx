@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { locationApi } from "../api/location";
 import { postApi } from "../api/post";
+import { AuthContext } from "./AuthContext";
 
 const FilterContext = createContext();
 
@@ -13,6 +14,9 @@ export const FilterProvider = ({ children }) => {
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
+
+  const { userId } = useContext(AuthContext);
+  // console.log("user", userId);
 
   const [filterParams, setFilterParams] = useState({
     cityId: null,
@@ -27,6 +31,7 @@ export const FilterProvider = ({ children }) => {
     page: 0,
     size: 3,
     isVip: null,
+    userId: userId,
     sortBy: "isVip",
     sortDirection: "desc",
   });
@@ -42,6 +47,7 @@ export const FilterProvider = ({ children }) => {
       page: 0,
       size: 3,
       isVip: null,
+      userId: userId,
       sortBy: "isVip",
       sortDirection: "desc",
     };
@@ -71,11 +77,11 @@ export const FilterProvider = ({ children }) => {
     setFilterParams(newFilterParams);
     // fetchPosts();
     // fetchPosts(newFilterParams);
-  }, [type, price, area, amenities, city, district, ward]);
+  }, [type, price, area, amenities, city, district, ward, userId]);
 
   useEffect(() => {
     fetchPosts(filterParams);
-  }, [filterParams]);
+  }, [filterParams, userId]);
 
   const [postsData, setPostsData] = useState([]);
   const [loading, setLoading] = useState(false);
