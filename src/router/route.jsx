@@ -16,6 +16,14 @@ import { PostListAdmin } from "../page/Dash/Admin/PostListAdmin";
 import PriceList from "../page/PriceList";
 import { ChatApp } from "../page/Chat/ChatAppdemo";
 import SavedPost from "../page/SavedPost";
+import VnPayReturnPage from "../components/Pay/VnPayReturnPage";
+import { AccountManager } from "../page/Dash/User/Acc/AccountManager";
+import { PersonalInfo } from "../page/Dash/User/Acc/PersonalInfo";
+import { ChangePhone } from "../page/Dash/User/Acc/ChangePhone";
+import { ChangePassword } from "../page/Dash/User/Acc/ChangePassword";
+import WalletManager from "../page/Dash/User/Wallet/WalletManager";
+import TopUpCon from "../page/Dash/User/Wallet/TopUpCon";
+import { HistoryTopUp } from "../page/Dash/User/Wallet/HistoryTopUp";
 
 export const router = createBrowserRouter([
   {
@@ -106,10 +114,52 @@ export const router = createBrowserRouter([
         path: "duyet-tin-dang",
         element: <PendingPost />,
       },
+
+      {
+        path: "tai-khoan",
+        element: <AccountManager />,
+        children: [
+          {
+            index: true,
+            // path: "thong-tin",
+            element: <PersonalInfo />,
+          },
+          {
+            path: "doi-dien-thoai",
+            element: <ChangePhone />,
+          },
+          {
+            path: "doi-mat-khau",
+            element: <ChangePassword />,
+          },
+        ],
+      },
+      {
+        path: "giao-dich",
+        element: <WalletManager />,
+        children: [
+          {
+            index: true,
+            element: <TopUpCon />,
+          },
+          {
+            path: "lich-su-nap-tien",
+            element: <HistoryTopUp />,
+          },
+          // {
+          //   path: "lich-su-thanh-toan",
+          //   element: <ChangePassword />,
+          // },
+        ],
+      },
     ],
   },
   {
     path: "/chat-app",
     element: <ChatApp />,
+  },
+  {
+    path: "/vnpay-return",
+    element: <VnPayReturnPage />,
   },
 ]);

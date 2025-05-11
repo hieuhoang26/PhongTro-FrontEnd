@@ -100,45 +100,28 @@ export const SidebarUser = () => {
               <span>Danh sách tin đăng</span>
             </a>
           </li>
-          {/* <li>
+          <li>
             <a
-              href="/admin"
+              href="/admin/giao-dich"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <BsWindowPlus size={20} />
-              <span>Nạp tiền vào tài khoản</span>
+              <span>Quản lí giao dịch</span>
             </a>
           </li>
+
           <li>
             <a
-              href="/admin"
-              className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
-            >
-              <BsClockHistory size={20} />
-              <span>Lịch sử nạp tiền</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/admin"
-              className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
-            >
-              <SlCalender size={20} />
-              <span>Lịch sử thanh toán</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/bang-gia-dich-vu"
+              href="/bang-gia"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <IoPricetagOutline size={20} />
               <span>Bảng giá dịch vụ</span>
             </a>
-          </li> */}
+          </li>
           <li>
             <a
-              href="/admin"
+              href="/admin/tai-khoan"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <CiUser size={20} />

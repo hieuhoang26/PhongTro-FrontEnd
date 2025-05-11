@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { packages } from "./PayPost";
 
 export const PaymentSummary = ({
@@ -8,6 +9,7 @@ export const PaymentSummary = ({
   totalMonth,
   postLabel,
   usePostTiktok,
+  totalAmount,
 }) => {
   // Find the selected package
   const pkg = packages.find((p) => p.value === selectedPackage);
@@ -40,31 +42,31 @@ export const PaymentSummary = ({
   };
 
   // Calculate total amount
-  const calculateTotal = () => {
-    const pricePerUnit = parseInt(getPricePerUnit());
-    let duration = 1;
+  // const calculateTotal = () => {
+  //   const pricePerUnit = parseInt(getPricePerUnit());
+  //   let duration = 1;
 
-    if (packageType === "day") duration = parseInt(totalDay);
-    if (packageType === "week") duration = parseInt(totalWeek);
-    if (packageType === "month") duration = parseInt(totalMonth);
+  //   if (packageType === "day") duration = parseInt(totalDay);
+  //   if (packageType === "week") duration = parseInt(totalWeek);
+  //   if (packageType === "month") duration = parseInt(totalMonth);
 
-    let total = pricePerUnit * duration;
+  //   let total = pricePerUnit * duration;
 
-    // Add label cost if selected (2000 per day)
-    if (postLabel) {
-      const labelDays =
-        packageType === "day"
-          ? duration
-          : packageType === "week"
-          ? duration * 7
-          : duration * 30;
-      total += 2000 * labelDays;
-    }
+  //   // Add label cost if selected (2000 per day)
+  //   if (postLabel) {
+  //     const labelDays =
+  //       packageType === "day"
+  //         ? duration
+  //         : packageType === "week"
+  //         ? duration * 7
+  //         : duration * 30;
+  //     total += 2000 * labelDays;
+  //   }
 
-    // Tiktok is currently free (0 VND)
-
-    return total;
-  };
+  //   // Tiktok is currently free (0 VND)
+  //   // setTotalAmount(total);
+  //   return total;
+  // };
 
   // Get duration text based on package type
   const getDurationText = () => {
@@ -122,7 +124,13 @@ export const PaymentSummary = ({
             <tr>
               <td className="pl-0 py-1">Thành tiền:</td>
               <td className="py-1 font-bold text-black text-lg">
-                {calculateTotal().toLocaleString("vi-VN")}₫
+                {/* {calculateTotal().toLocaleString("vi-VN")}₫ */}
+                {/* {totalAmount}₫ */}
+                {typeof totalAmount === "number" ? (
+                  <div>{totalAmount.toLocaleString("vi-VN")}₫</div>
+                ) : (
+                  <div>Calculating...</div> // Fallback while loading
+                )}
               </td>
             </tr>
           </tbody>

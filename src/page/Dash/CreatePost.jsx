@@ -5,6 +5,8 @@ import { PayPost } from "./PayPost";
 import { AuthContext } from "../../context/AuthContext";
 import { postApi } from "../../api/post";
 import axios from "axios";
+import { paymentApi } from "../../api/payment";
+import { toast } from "react-toastify";
 
 const CreatePost = () => {
   const [step, setStep] = useState(1);
@@ -30,7 +32,7 @@ const CreatePost = () => {
     typeId: "",
     isVip: "",
     vipExpiryDate: "",
-    status: "PENDING",
+    status: "",
     images: [],
     videoFiles: [],
     videoLink: "",
@@ -45,6 +47,13 @@ const CreatePost = () => {
     username: "",
     phone: "",
   });
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const [payMethod, setPayMethod] = useState(null);
+
+  // useEffect(() => {
+  //   console.log("vips", Number(getVipIdFromValue(formData.isVip)));
+  // }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +69,7 @@ const CreatePost = () => {
     formDataToSend.append("fullAddress", formData.fullAddress);
     formDataToSend.append("typeId", Number(formData.typeId));
     formDataToSend.append("isVip", Number(formData.isVip));
+    formDataToSend.append("isVip", Number(getVipIdFromValue(formData.isVip)));
 
     if (formData.vipExpiryDate) {
       const formattedVipDate = new Date(formData.vipExpiryDate)
@@ -68,7 +78,8 @@ const CreatePost = () => {
       formDataToSend.append("vipExpiryDate", formattedVipDate);
     }
 
-    formDataToSend.append("status", formData.status);
+    // formDataToSend.append("status", formData.status);
+    formDataToSend.append("status", "PAYING");
     formDataToSend.append("wardId", Number(formData.ward)); // Đảm bảo ward là số
     formDataToSend.append("detailAddress", detailAddress);
     formDataToSend.append("videoLink", formData.videoLink || "");
@@ -91,28 +102,59 @@ const CreatePost = () => {
         formDataToSend.append("categories", cat);
       });
     }
-
-    // try {
-    //   const response = await postApi.createPost(formDataToSend);
-    //   console.log("Post created:", response.data.data);
-    // } catch (error) {
-    //   const errMsg =
-    //     error?.response?.data?.message ||
-    //     error?.message ||
-    //     "Có lỗi xảy ra khi tạo bài viết.";
-    //   console.error("Lỗi tạo bài viết:", error);
-    // }
+    if (!payMethod) {
+      toast.error("Vui lòng chọn phương thức thanh toán!");
+      return;
+    }
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/post",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      // const postResponse = await axios.post(
+      //   "http://localhost:8080/api/v1/post",
+      //   formDataToSend,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+      const postResponse = await postApi.createPost(formDataToSend);
+      const postId = postResponse.data.data;
+
+      console.log("Post created:", postId);
+
+      // Gọi tạo thanh toán VNPay
+      if (payMethod === 1) {
+        // Gọi API thanh toán bằng ví tài khoản
+        // const walletResponse = await paymentApi.payWithWallet({
+        //   userId: formData.userId,
+        //   postId: postId,
+        //   amount: totalAmount,
+        //   paymentType: "POST_PAYMENT", // tuỳ theo backend định nghĩa
+        // });
+        // if (walletResponse.data.success) {
+        //   alert("Thanh toán bằng ví thành công!");
+        //   // Optional: redirect hoặc load lại trang
+        // } else {
+        //   alert(walletResponse.data.message || "Thanh toán ví thất bại!");
+        // }
+      } else if (payMethod === 2) {
+        // Gọi API thanh toán bằng VNPay
+        const paymentResponse = await paymentApi.createVnPayPayment(
+          totalAmount,
+          "PAYMENT",
+          formData.userId,
+          postId
+        );
+
+        const { paymentUrl } = paymentResponse.data;
+        console.log(paymentUrl);
+        if (paymentUrl) {
+          // window.location.href = paymentUrl;
+        } else {
+          alert("Không lấy được link thanh toán VNPay!");
         }
-      );
-      console.log("Post created:", response.data.data);
+      } else {
+        alert("Vui lòng chọn phương thức thanh toán hợp lệ.");
+      }
     } catch (error) {
       const errMsg =
         error?.response?.data?.message ||
@@ -143,6 +185,10 @@ const CreatePost = () => {
     window.scrollTo(0, 0);
   }, [step]);
 
+  const getVipIdFromValue = (value) => {
+    return vipIdMapping[value] || null;
+  };
+
   return (
     <div>
       {step === 1 ? (
@@ -157,10 +203,21 @@ const CreatePost = () => {
           setFormData={setFormData}
           setStep={setStep}
           handleSubmit={handleSubmit}
+          setTotalAmount={setTotalAmount}
+          totalAmount={totalAmount}
+          setPayMethod={setPayMethod}
+          payMethod={payMethod}
         />
       )}
     </div>
   );
 };
-
+export const vipIdMapping = {
+  6: 0, // Tin miễn phí
+  5: 0, // Tin thường
+  4: 2, // Tin VIP 3
+  3: 3, // Tin VIP 2
+  2: 4, // Tin VIP 1
+  1: 5, // Tin VIP nổi bật
+};
 export default CreatePost;
