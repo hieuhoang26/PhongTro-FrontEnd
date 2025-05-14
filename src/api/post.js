@@ -44,6 +44,15 @@ export const postApi = {
   delete(id) {
     return http.delete(`post/${id}`);
   },
+  getNearby(lat, lng, typeId) {
+    return http.get("post/nearby", {
+      params: {
+        lat,
+        lng,
+        typeId,
+      },
+    });
+  },
 };
 // postApi.filter({
 //     typeId: 1,

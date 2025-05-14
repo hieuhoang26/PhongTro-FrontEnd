@@ -12,6 +12,7 @@ import { postApi } from "../api/post";
 import { Pagination } from "../components/Pagination";
 import { useFilter } from "../context/FilterContext";
 import Spinner from "../components/Spinner";
+import { LuMapPinPlus } from "react-icons/lu";
 
 const tabs = [
   {
@@ -88,27 +89,37 @@ export default function Home({ typeId }) {
             ))}
           </div>
           {/* tabs */}
-          <div className="mt-4 mb-3 pt-2 flex gap-4">
-            {tabs.map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => {
-                  setActiveTab(tab.value);
-                  fetchPosts({
-                    sortBy: tab.sortBy,
-                    sortDirection: tab.sortDirection,
-                    // hasVideo: tab.hasVideo ?? undefined,
-                  });
-                }}
-                className={`text-sm pb-1 ${
-                  activeTab === tab.value
-                    ? "font-medium border-b border-black text-black"
-                    : "font-normal text-gray-800"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="mt-4 mb-3 pt-2 flex gap-4 items-center">
+            <div className="flex gap-4">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => {
+                    setActiveTab(tab.value);
+                    fetchPosts({
+                      sortBy: tab.sortBy,
+                      sortDirection: tab.sortDirection,
+                      // hasVideo: tab.hasVideo ?? undefined,
+                    });
+                  }}
+                  className={`text-sm pb-1 ${
+                    activeTab === tab.value
+                      ? "font-medium border-b border-black text-black"
+                      : "font-normal text-gray-800"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <Link
+              to="/map"
+              className="ml-auto flex items-center gap-2 text-sm font-medium text-black  px-4 py-2 rounded-xl hover:bg-gray-100 transition"
+            >
+              <LuMapPinPlus className="w-5 h-5" />
+              Tìm bằng bản đồ
+            </Link>
           </div>
 
           {/* posts */}

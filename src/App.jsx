@@ -6,6 +6,8 @@ import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { Slide, ToastContainer } from "react-toastify";
 import { FilterProvider } from "./context/FilterContext";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 function App() {
   return (

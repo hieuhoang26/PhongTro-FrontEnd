@@ -15,7 +15,7 @@ export const SidebarUser = () => {
   const { userId } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState();
-  const [balance, setBalance] = useState();
+  const [balance, setBalance] = useState(0);
 
   const [loading, setLoading] = useState(true);
 

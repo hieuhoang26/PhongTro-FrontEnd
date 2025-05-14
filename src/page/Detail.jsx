@@ -25,6 +25,7 @@ import { postApi } from "../api/post";
 import RelatedPost from "../components/RelatedPost";
 import { FaPhoneAlt, FaStar } from "react-icons/fa";
 import { LuMessageSquareMore } from "react-icons/lu";
+import { MapDetail } from "../components/Map/MapDetail";
 
 export default function Detail() {
   const { id } = useParams();
@@ -57,6 +58,7 @@ export default function Detail() {
   if (loading) {
     return <div className="text-center p-8">Đang tải dữ liệu...</div>;
   }
+  console.log(detail);
 
   return (
     <div className="flex justify-center mt-6">
@@ -229,6 +231,19 @@ export default function Detail() {
                   })}
                 </div>
               </section>
+              {/* Map  */}
+              <section className="border-b pb-4 mb-4 border-[#f1f1f1]">
+                <h2 className="text-lg font-medium mb-2">Vị trí & bản đồ</h2>
+                <p className="text-sm mb-2">
+                  <i className="bi bi-geo-alt mr-2"></i>
+                  Địa chỉ: {detail.address}
+                  <span className="inline-block text-blue-600 underline ml-1 cursor-pointer">
+                    Xem bản đồ lớn
+                  </span>
+                </p>
+                <MapDetail address={detail.address} />
+              </section>
+              {/* Thông tin liên hệ */}
               <section className="mb-4">
                 <h2 className="text-lg font-medium mb-3">Thông tin liên hệ</h2>
                 <div className="flex gap-4">
@@ -397,25 +412,3 @@ const posts = [
     link: "/thu-duc-can-cho-thue-gap-tang-tret-lam-van-phong-pr679874.html",
   },
 ];
-
-{
-  /* <section className="border-b pb-4 mb-4 border-[#f1f1f1]">
-        <h2 className="text-lg font-medium mb-2">Vị trí & bản đồ</h2>
-        <p className="text-sm mb-2">
-          <i className="bi bi-geo-alt mr-2"></i>
-          Địa chỉ: 255/28 Đường Nguyễn Văn Trỗi, Phường Mỗ Lao, Quận Hà Đông, Hà Nội
-          <span className="inline-block text-blue-600 underline ml-1 cursor-pointer">Xem bản đồ lớn</span>
-        </p>
-        <div className="bg-gray-100 h-[300px]">
-          <iframe
-            title="Vị trí cho thuê"
-            width="100%"
-            height="100%"
-            frameBorder="0"
-            style={{ border: 0 }}
-            src="https://www.google.com/maps/embed/v1/place?q=255/28 Đường Nguyễn Văn Trỗi, Phường Mỗ Lao, Quận Hà Đông, Hà Nội&key=AIzaSyD6Coia3ssHYuRKJ2nDysWBdSlVlBCzKAw&zoom=14"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </section> */
-}

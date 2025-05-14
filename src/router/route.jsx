@@ -25,7 +25,7 @@ import WalletManager from "../page/Dash/User/Wallet/WalletManager";
 import TopUpCon from "../page/Dash/User/Wallet/TopUpCon";
 import { HistoryTopUp } from "../page/Dash/User/Wallet/HistoryTopUp";
 import { HistoryOrder } from "../page/Dash/User/Wallet/HistoryOrder";
-import { Notification } from "../components/Noti/Notification";
+import { MapBox } from "../components/Map/MapBox";
 
 export const router = createBrowserRouter([
   {
@@ -165,7 +165,7 @@ export const router = createBrowserRouter([
     element: <VnPayReturnPage />,
   },
   {
-    path: "/noti",
-    element: <Notification />,
+    path: "/map",
+    element: <MapBox />,
   },
 ]);

@@ -3,6 +3,11 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { notificationApi } from "../../api/notification";
 import { useInView } from "react-intersection-observer";
 import { AuthContext } from "../../context/AuthContext";
+import {
+  connectNotificationSocket,
+  disconnectNotificationSocket,
+} from "./notificationSocket";
+import { toast } from "react-toastify";
 
 export const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
@@ -16,9 +21,11 @@ export const NotificationDropdown = () => {
 
   const { userId } = useContext(AuthContext);
 
+  console.log(notifications);
+
   // Load initial notifications when userId changes or on first render
   useEffect(() => {
-    if (!userId) return; // không fetch nếu chưa có userId
+    if (!userId) return;
 
     const fetchData = async () => {
       if (loading) return;
@@ -39,6 +46,15 @@ export const NotificationDropdown = () => {
     };
 
     fetchData();
+    // Kết nối socket và nhận thông báo
+    connectNotificationSocket(userId, (newNotification) => {
+      setTimeout(() => {
+        toast.info("Bạn có thông báo mới");
+        console.log("ssss");
+      }, 100);
+      fetchData();
+    });
+    return () => disconnectNotificationSocket();
   }, [userId]); // fetch khi userId thay đổi
 
   // Auto load when scroll to bottom
@@ -62,7 +78,7 @@ export const NotificationDropdown = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await notificationApi.markAllRead(userId);
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (err) {
       console.error("Error marking all as read");
     }
@@ -72,7 +88,7 @@ export const NotificationDropdown = () => {
     try {
       await notificationApi.markAsRead(id);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
     } catch (err) {
       console.error("Error marking as read");
@@ -115,24 +131,24 @@ export const NotificationDropdown = () => {
                 {notifications.map((noti) => (
                   <div
                     key={noti.id}
-                    className={`relative px-4 py-3 text-sm cursor-pointer transition-colors duration-200 border-b last:border-b-0 ${
-                      noti.read
+                    className={`relative px-4 py-3 text-sm cursor-pointer transition-colors duration-200 border-b border-gray-200 last:border-b-0 ${
+                      noti.isRead
                         ? "bg-white text-gray-400"
                         : "bg-gray-50 hover:bg-gray-100 text-gray-800 font-medium"
                     }`}
                   >
                     <div onClick={() => handleMarkAsRead(noti.id)}>
-                      <div>{noti.title}</div>
-                      <div className="text-xs mt-1 line-clamp-2">
-                        {noti.message}
+                      <div className="font-semibold text-sm">{noti.title}</div>
+                      <div className="text-xs mt-1 line-clamp-2 text-gray-600">
+                        {noti.content}
                       </div>
-                      {noti.time && (
-                        <div className="text-[10px] text-gray-400 mt-1">
-                          {formatTime(noti.time)}
+                      {noti.createdAt && (
+                        <div className="text-[11px] text-gray-400 mt-1 italic">
+                          {formatTime(noti.createdAt)}
                         </div>
                       )}
                     </div>
-                    {!noti.read && (
+                    {!noti.isRead && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
