@@ -8,11 +8,14 @@ import { LiaEdit } from "react-icons/lia";
 import { SlCalender } from "react-icons/sl";
 import { AuthContext } from "../../context/AuthContext";
 import { userApi } from "../../api/user";
+import { paymentApi } from "../../api/payment";
+import { formatNumber, formatPrice } from "../../utils/other";
 
 export const SidebarUser = () => {
   const { userId } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState();
+  const [balance, setBalance] = useState();
 
   const [loading, setLoading] = useState(true);
 
@@ -32,8 +35,20 @@ export const SidebarUser = () => {
         setLoading(false); // No userId, no need to load
       }
     };
-
+    const fetchWallet = async () => {
+      if (userId) {
+        try {
+          const res = await paymentApi.getWallet(userId);
+          setBalance(res.data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
     fetchUserData();
+    fetchWallet();
   }, [userId]);
 
   if (loading) {
@@ -67,7 +82,7 @@ export const SidebarUser = () => {
             <div>
               <p className="m-0 text-sm">Số dư tài khoản</p>
               <p className="m-0 text-base font-bold">
-                {userInfo?.balance || 0}
+                {formatNumber(balance) || 0}đ
               </p>
             </div>
             <a

@@ -24,6 +24,8 @@ import { ChangePassword } from "../page/Dash/User/Acc/ChangePassword";
 import WalletManager from "../page/Dash/User/Wallet/WalletManager";
 import TopUpCon from "../page/Dash/User/Wallet/TopUpCon";
 import { HistoryTopUp } from "../page/Dash/User/Wallet/HistoryTopUp";
+import { HistoryOrder } from "../page/Dash/User/Wallet/HistoryOrder";
+import { Notification } from "../components/Noti/Notification";
 
 export const router = createBrowserRouter([
   {
@@ -146,10 +148,10 @@ export const router = createBrowserRouter([
             path: "lich-su-nap-tien",
             element: <HistoryTopUp />,
           },
-          // {
-          //   path: "lich-su-thanh-toan",
-          //   element: <ChangePassword />,
-          // },
+          {
+            path: "lich-su-thanh-toan",
+            element: <HistoryOrder />,
+          },
         ],
       },
     ],
@@ -161,5 +163,9 @@ export const router = createBrowserRouter([
   {
     path: "/vnpay-return",
     element: <VnPayReturnPage />,
+  },
+  {
+    path: "/noti",
+    element: <Notification />,
   },
 ]);

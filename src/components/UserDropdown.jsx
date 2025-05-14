@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiSolidCheckCircle } from "react-icons/bi";
 import { BsWindowPlus } from "react-icons/bs";
 import { CiUser } from "react-icons/ci";
@@ -7,10 +7,28 @@ import { IoIosLogOut } from "react-icons/io";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { TiWarningOutline } from "react-icons/ti";
 import { AuthContext } from "../context/AuthContext";
+import { paymentApi } from "../api/payment";
+import { formatNumber } from "../utils/other";
 
 export default function UserDropdown({ user }) {
   const { logout } = useContext(AuthContext);
+  const [balance, setBalance] = useState(0);
 
+  useEffect(() => {
+    const fetchWallet = async () => {
+      if (user) {
+        try {
+          const res = await paymentApi.getWallet(user.id);
+          setBalance(res.data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          // setLoading(false);
+        }
+      }
+    };
+    fetchWallet();
+  }, [user]);
   return (
     <div className="relative hidden lg:block">
       <div className="absolute right-0  w-[350px] bg-white shadow-2xl p-4 rounded-lg z-50 border border-gray-200 -translate-y-5">
@@ -32,7 +50,9 @@ export default function UserDropdown({ user }) {
         <div className="text-xs flex justify-between bg-yellow-100 p-3 mb-3 rounded-lg border border-yellow-200">
           <div>
             <div>Số dư tài khoản</div>
-            <div className="text-lg font-bold leading-tight">0</div>
+            <div className="text-lg font-bold leading-tight">
+              {formatNumber(balance) || 0}đ
+            </div>
           </div>
           <a
             href="/"

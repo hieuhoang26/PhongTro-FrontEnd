@@ -32,7 +32,7 @@ const VnPayReturnPage = () => {
 
           // Thêm độ trễ 3 giây trước khi chuyển hướng
           const timer = setTimeout(() => {
-            navigate("/admin");
+            window.close();
           }, 3000);
 
           // Cleanup function để tránh memory leak

@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
+import { AuthContext } from "../../../../context/AuthContext";
+import { paymentApi } from "../../../../api/payment";
 
-export const TopUpS2 = ({ setStep }) => {
+export const TopUpS2 = ({ setStep, payMethod }) => {
+  const { userId } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({
     amount: "50000",
     amount_input: "50.000",
@@ -35,16 +39,37 @@ export const TopUpS2 = ({ setStep }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-
   const amount = parseInt(formData.amount.replace(/\./g, ""));
   const tax = Math.round(amount * 0.1);
   const subTotal = amount - tax;
   const discount = 0;
   const total = subTotal + discount;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const rawAmount = parseInt(formData.amount.replace(/\./g, ""));
+    try {
+      if (payMethod === 1) {
+        const res = await paymentApi.createVnPayPayment(
+          rawAmount,
+          "TOP_UP",
+          userId,
+          null
+        );
+        console.log(res.data?.paymentUrl);
+        // Redirect to VNPay link nếu backend trả URL
+        if (res.data?.paymentUrl) {
+          // window.location.href = res.data.paymentUrl;
+        }
+      } else if (payMethod === 2) {
+        // Gọi API chuyển khoản nếu có
+        console.log("Chuyển khoản ngân hàng - tạo phiếu hướng dẫn");
+        // Ví dụ giả định: paymentApi.createBankTransfer(...)
+      }
+    } catch (error) {
+      console.error("Payment failed", error);
+    }
+  };
 
   return (
     <form

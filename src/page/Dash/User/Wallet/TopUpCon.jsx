@@ -5,9 +5,14 @@ import { TopUpS2 } from "./TopUpS2";
 const TopUpCon = () => {
   const [step, setStep] = useState(1);
 
-  const handleNext = () => {
+  const [payMethod, setPayMethod] = useState(null); // Ví dụ: 'vnpay', 'atm', 'bank'
+  // const [amount, setAmount] = useState(null); // Ví dụ: '50000'
+
+  console.log(payMethod);
+  const handleNext = (selectedPayMethod) => {
     // Validate step 1 fields before proceeding
     if (step === 1 && validateStep1()) {
+      setPayMethod(selectedPayMethod);
       setStep(2);
     }
   };
@@ -30,7 +35,12 @@ const TopUpCon = () => {
       {step === 1 ? (
         <TopUp handleNext={handleNext} />
       ) : (
-        <TopUpS2 setStep={setStep} />
+        <TopUpS2
+          setStep={setStep}
+          payMethod={payMethod}
+          // amount={amount}
+          // setAmount={setAmount}
+        />
       )}
     </div>
   );

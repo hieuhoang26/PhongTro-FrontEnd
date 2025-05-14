@@ -9,6 +9,7 @@ import {
   FiMapPin,
   FiFilter,
   FiMenu,
+  FiBell,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
@@ -24,6 +25,7 @@ import {
   IoChatboxEllipsesOutline,
   IoChatbubbleEllipsesOutline,
 } from "react-icons/io5";
+import { NotificationDropdown } from "../Noti/NotificationDropdown";
 
 const Header = () => {
   const { isAuthenticated, userId, logout } = useContext(AuthContext);
@@ -123,6 +125,8 @@ const Header = () => {
                   <FiFolder className="w-4 h-4 mr-2" />
                   <span>Quản lý</span>
                 </a>
+                {/* Noti */}
+                <NotificationDropdown />
 
                 {/* Account Dropdown */}
                 <div className="hidden lg:block relative">
@@ -135,12 +139,12 @@ const Header = () => {
                       alt="Ảnh đại diện"
                       className="w-8 h-8 rounded-full mr-2"
                     />
-                    <span>
+                    {/* <span>
                       {isAuthenticated
                         ? userInfo?.name || "Người dùng"
                         : "Tài khoản"}
                     </span>
-                    <FaCaretDown />
+                    <FaCaretDown /> */}
                   </button>
 
                   {showAccountDropdown && (

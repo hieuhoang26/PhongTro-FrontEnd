@@ -128,6 +128,7 @@ export const PostListAdmin = () => {
             <option value="APPROVED">APPROVED</option>
             <option value="EXPIRED">EXPIRED</option>
             <option value="REJECTED">REJECTED</option>
+            <option value="PAYING">PAYING</option>
           </select>
 
           {/* Input tìm kiếm */}

@@ -114,18 +114,28 @@ export default function Home({ typeId }) {
           {/* posts */}
           {loading ? (
             <Spinner />
+          ) : postsData.length === 0 ? (
+            <>
+              <div className="p-5 text-center flex flex-col items-center justify-center">
+                <img
+                  src="https://phongtro123.com/images/file-searching-rafiki-gray.svg"
+                  alt="No posts in this area"
+                  className="max-w-[200px] max-h-[200px]"
+                />
+                <p className="mt-2 text-red-600">Hiện tại chưa có tin đăng</p>
+              </div>
+            </>
           ) : (
             <>
               {postsData.map((item) => {
                 if (item.isVip === 5)
                   return <PostCardV3 key={item.id} post={item} />;
-                if (item.isVip === 4 || item.isVip == 3)
+                if (item.isVip === 4 || item.isVip === 3)
                   return <PostCardV2 key={item.id} post={item} />;
                 return <PostCard key={item.id} post={item} />;
               })}
 
               {/* pagination */}
-
               <Pagination
                 currentPage={filterParams.page + 1}
                 totalPages={totalPages}

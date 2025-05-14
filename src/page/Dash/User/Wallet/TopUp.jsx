@@ -13,6 +13,7 @@ export const TopUp = ({ handleNext }) => {
       ),
     },
     {
+      id: 2,
       name: "Thẻ ATM nội địa",
       icon: (
         <div className="bg-blue-100 rounded-md w-10 h-10 flex justify-center items-center">
@@ -21,6 +22,7 @@ export const TopUp = ({ handleNext }) => {
       ),
     },
     {
+      id: 3,
       name: "Chuyển khoản",
       icon: (
         <div className="bg-green-100 rounded-md w-10 h-10 flex justify-center items-center">
@@ -54,7 +56,7 @@ export const TopUp = ({ handleNext }) => {
           {paymentOptions.map((option, index) => (
             <li key={index}>
               <button
-                onClick={handleNext}
+                onClick={() => handleNext(option.id)}
                 className="flex items-center w-full justify-between bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-3 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center gap-3">

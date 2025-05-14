@@ -36,7 +36,7 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
     contactName: "",
     contactPhone: "",
   });
-  console.log("formData", formData);
+  // console.log("formData", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
