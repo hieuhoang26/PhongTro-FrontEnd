@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
-import MAPBOX_TOKEN from "../../utils/mapbox";
+import { MAPBOX_TOKEN } from "../../utils/mapbox";
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapboxgl.accessToken });

@@ -29,10 +29,11 @@ export const FilterProvider = ({ children }) => {
     typeId: null,
     categoryIds: [],
     page: 0,
-    size: 3,
+    size: 5,
     isVip: null,
     userId: userId,
     sortBy: "isVip",
+    status: "APPROVED",
     sortDirection: "desc",
   });
   // console.log("filterParams", filterParams);
@@ -45,10 +46,11 @@ export const FilterProvider = ({ children }) => {
       typeId: type || null,
       categoryIds: amenities.length ? amenities.join(",") : null,
       page: 0,
-      size: 3,
+      size: 5,
       isVip: null,
       userId: userId,
       sortBy: "isVip",
+      status: "APPROVED",
       sortDirection: "desc",
     };
 

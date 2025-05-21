@@ -68,11 +68,11 @@ const VideoUploadSection = ({ formData, setFormData }) => {
         </div>
       </div>
 
-      <p className="text-sm text-center mb-3">Hoặc</p>
+      {/* <p className="text-sm text-center mb-3">Hoặc</p> */}
 
       {/* Upload Video from Device */}
       <div>
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <div
             className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition"
             onClick={handleUploadClick}
@@ -90,10 +90,10 @@ const VideoUploadSection = ({ formData, setFormData }) => {
           ref={fileInputRef}
           className="hidden"
           onChange={handleFilesChange}
-        />
+        /> */}
 
         {/* Preview uploaded videos */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* <div className="grid grid-cols-3 gap-3">
           {formData.videoFiles?.map((video, index) => (
             <div
               key={index}
@@ -115,7 +115,7 @@ const VideoUploadSection = ({ formData, setFormData }) => {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

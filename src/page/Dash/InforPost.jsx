@@ -5,8 +5,9 @@ import { formatNumber, parseNumber } from "../../utils/other";
 import ImageUploadSection from "../../components/Admin/ImageUploadSection";
 import VideoUploadSection from "../../components/Admin/VideoUploadSection";
 import { AddPostNav } from "../../components/Admin/AddPostNav";
+import { IoWarningOutline } from "react-icons/io5";
 
-export const InfoPost = ({ formData, setFormData, handleNext }) => {
+export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -117,6 +118,19 @@ export const InfoPost = ({ formData, setFormData, handleNext }) => {
       <div className="flex justify-center">
         <div className="w-full lg:w-4/6 mt-5">
           <form onSubmit={handleSubmit} className="form-horizontal">
+            {isVerify == false && (
+              <div class="bg-orange-200 px-6 py-4 my-2 rounded-md text-lg flex items-center mx-auto w-full">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="text-yellow-600 w-5 h-5 sm:w-5 sm:h-5 mr-3"
+                >
+                  <IoWarningOutline size={24} />
+                </svg>
+                <span class="text-yellow-800">
+                  Cần xác thực tài khoản trước khi đăng tin. Vui lòng kiểm tra
+                </span>
+              </div>
+            )}
             {/* Category Section */}
             <div className="bg-white shadow-sm rounded p-4 mb-4">
               <div className="text-lg font-medium mb-3">Loại chuyên mục</div>
@@ -488,17 +502,3 @@ const types = [
   { value: "6", label: "Tìm người ở ghép" },
   { value: "7", label: "Cho thuê mặt bằng + Văn phòng" },
 ];
-
-// <div className="bg-white shadow-sm rounded p-4 mb-4">
-//   <div className="fs-5 fw-medium">Bản đồ</div>
-//   <div className="w-full h-64 mt-3">
-//     <iframe
-//       width="100%"
-//       height="100%"
-//       style={{ border: 0 }}
-//       loading="lazy"
-//       allowFullScreen
-//       src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD6Coia3ssHYuRKJ2nDysWBdSlVlBCzKAw&q=Hồ Chí Minh"
-//     ></iframe>
-//   </div>
-// </div>

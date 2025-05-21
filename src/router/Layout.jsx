@@ -8,11 +8,14 @@ import Footer from "../components/Footer/Footer";
 import WhyChoose from "../components/Footer/WhyChoose";
 import SupportSection from "../components/Footer/SupportSection";
 import AboutPhongTroSection from "../components/Footer/AboutPhongTroSection";
+import { ChatBot } from "../components/Bot/ChatBot";
 
 function Layout() {
   const location = useLocation();
   const isBangGiaPage = location.pathname === "/bang-gia";
   const isPhongTroPage = location.pathname === "/";
+  const isAuthPage =
+    location.pathname === "/dang-nhap" || location.pathname === "/dang-ky";
 
   const className = classNames("pt-24 px-4 max-w-full mx-auto", {
     "xl:max-w-[calc(100%-280px*2)]": !isBangGiaPage,
@@ -37,17 +40,22 @@ function Layout() {
       <main className={className}>
         <Outlet />
       </main>
-      {!isBangGiaPage && (
+      {!isBangGiaPage && !isAuthPage && (
         <div className={className}>
+          <ChatBot />
           <AboutPhongTroSection />
           <WhyChoose />
           <SupportSection />
         </div>
       )}
-      <footer className={classNameFooter}>
-        <Footer />
-      </footer>
-      {!isBangGiaPage && (
+
+      {!isAuthPage && (
+        <footer className={classNameFooter}>
+          <Footer />
+        </footer>
+      )}
+
+      {!isBangGiaPage && !isAuthPage && (
         <div className="fixed top-30 xl:left-30 2xl:left-30 [@media(min-width:1920px)]:left-70 z-40 hidden xl:block">
           <a href="/" target="_blank" rel="nofollow">
             <img src={left} alt="banner left" className="w-[120px] h-auto" />
@@ -56,7 +64,7 @@ function Layout() {
       )}
 
       {/* Banner phải */}
-      {!isBangGiaPage && (
+      {!isBangGiaPage && !isAuthPage && (
         <div className="fixed top-30 xl:right-8 2xl:right-30 [@media(min-width:1920px)]:right-70 z-40 hidden xl:block">
           <a href="/" target="_blank" rel="nofollow">
             <img src={right} alt="banner right" className="w-[120px] h-auto" />

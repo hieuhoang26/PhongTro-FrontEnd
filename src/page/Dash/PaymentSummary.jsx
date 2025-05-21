@@ -10,21 +10,25 @@ export const PaymentSummary = ({
   postLabel,
   usePostTiktok,
   totalAmount,
+  vipExpiryDate,
 }) => {
   // Find the selected package
   const pkg = packages.find((p) => p.value === selectedPackage);
 
   // Calculate expiration date (current date + duration)
   const calculateExpirationDate = () => {
-    const now = new Date();
+    // const now = new Date();
+    const baseDate = vipExpiryDate ? new Date(vipExpiryDate) : new Date();
     let duration = 0;
 
     if (packageType === "day") duration = parseInt(totalDay);
     if (packageType === "week") duration = parseInt(totalWeek) * 7;
     if (packageType === "month") duration = parseInt(totalMonth) * 30;
 
-    now.setDate(now.getDate() + duration);
-    return now.toLocaleString("vi-VN", {
+    // now.setDate(now.getDate() + duration);
+    const expirationDate = new Date(baseDate);
+    expirationDate.setDate(expirationDate.getDate() + duration);
+    return expirationDate.toLocaleString("vi-VN", {
       hour: "2-digit",
       minute: "2-digit",
       day: "2-digit",
@@ -40,33 +44,6 @@ export const PaymentSummary = ({
     if (packageType === "week") return pkg.priceWeek.replace(/[^\d]/g, "");
     return pkg.priceMonth.replace(/[^\d]/g, "");
   };
-
-  // Calculate total amount
-  // const calculateTotal = () => {
-  //   const pricePerUnit = parseInt(getPricePerUnit());
-  //   let duration = 1;
-
-  //   if (packageType === "day") duration = parseInt(totalDay);
-  //   if (packageType === "week") duration = parseInt(totalWeek);
-  //   if (packageType === "month") duration = parseInt(totalMonth);
-
-  //   let total = pricePerUnit * duration;
-
-  //   // Add label cost if selected (2000 per day)
-  //   if (postLabel) {
-  //     const labelDays =
-  //       packageType === "day"
-  //         ? duration
-  //         : packageType === "week"
-  //         ? duration * 7
-  //         : duration * 30;
-  //     total += 2000 * labelDays;
-  //   }
-
-  //   // Tiktok is currently free (0 VND)
-  //   // setTotalAmount(total);
-  //   return total;
-  // };
 
   // Get duration text based on package type
   const getDurationText = () => {

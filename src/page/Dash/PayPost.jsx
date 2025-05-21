@@ -131,6 +131,12 @@ export const PayPost = ({
     setFormData,
   ]);
 
+  useEffect(() => {
+    if (selectedPackage === "6") {
+      handlePayOptionChange(0);
+    }
+  }, [selectedPackage]);
+
   const getPricePerUnit = () => {
     if (!pkg) return "0";
     if (packageType === "day") return pkg.priceDay.replace(/[^\d]/g, "");

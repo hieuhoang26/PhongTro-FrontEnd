@@ -110,23 +110,28 @@ const Header = () => {
                   <FiHeart className="w-4 h-4 mr-2" />
                   <span>Tin đã lưu</span>
                 </a>
-
-                <a
-                  href="/chat-app"
-                  className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
-                >
-                  <IoChatboxEllipsesOutline className="w-4 h-4 mr-2" />
-                  <span>Tin nhắn</span>
-                </a>
-                <a
-                  href="/admin"
-                  className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
-                >
-                  <FiFolder className="w-4 h-4 mr-2" />
-                  <span>Quản lý</span>
-                </a>
-                {/* Noti */}
-                <NotificationDropdown />
+                {isAuthenticated ? (
+                  <>
+                    <a
+                      href="/chat-app"
+                      className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
+                    >
+                      <IoChatboxEllipsesOutline className="w-4 h-4 mr-2" />
+                      <span>Tin nhắn</span>
+                    </a>
+                    <a
+                      href="/admin"
+                      className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
+                    >
+                      <FiFolder className="w-4 h-4 mr-2" />
+                      <span>Quản lý</span>
+                    </a>
+                    {/* Noti */}
+                    <NotificationDropdown />
+                  </>
+                ) : (
+                  <></>
+                )}
 
                 {/* Account Dropdown */}
                 <div className="hidden lg:block relative">

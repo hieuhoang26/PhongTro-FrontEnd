@@ -147,9 +147,7 @@ const Register = () => {
             </a>{" "}
             của chúng tôi
           </p>
-          <p className="text-xs mt-2">
-            Bản quyền © 2015 - 2025 Phongtro123.com
-          </p>
+          <p className="text-xs mt-2">Bản quyền © 2015 - 2025 hhhxxx</p>
         </div>
       </div>
     </div>

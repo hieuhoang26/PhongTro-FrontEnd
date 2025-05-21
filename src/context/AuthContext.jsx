@@ -8,6 +8,7 @@ import {
   setRefreshTokenToSession,
   setProfileToSession,
 } from "../utils/storage";
+import { set } from "react-hook-form";
 
 const AuthContext = createContext();
 
@@ -17,6 +18,7 @@ const AuthProvider = ({ children }) => {
   );
   const [userId, setUserId] = useState();
   const [role, setRole] = useState();
+  const [isVerify, setIsVerify] = useState();
 
   useEffect(() => {
     const storedUser = getProfileFromSession();
@@ -29,6 +31,7 @@ const AuthProvider = ({ children }) => {
   const login = (data) => {
     setUserId(data.id);
     setRole(data.role);
+    setIsVerify(data.verify);
     setProfileToSession({ id: data.id, role: data.role, phone: data.phone });
     setAccessTokenToSession(data.accessToken);
     setRefreshTokenToSession(data.refreshToken);
@@ -51,6 +54,7 @@ const AuthProvider = ({ children }) => {
         userId,
         login,
         logout,
+        isVerify,
         role,
       }}
     >

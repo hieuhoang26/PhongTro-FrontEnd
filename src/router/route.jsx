@@ -26,6 +26,9 @@ import TopUpCon from "../page/Dash/User/Wallet/TopUpCon";
 import { HistoryTopUp } from "../page/Dash/User/Wallet/HistoryTopUp";
 import { HistoryOrder } from "../page/Dash/User/Wallet/HistoryOrder";
 import { MapBox } from "../components/Map/MapBox";
+import Statistic from "../page/Dash/Admin/Statistic/Statistic";
+import UserManager from "../page/Dash/Admin/Acc/UserManager";
+import Verify from "../page/Dash/User/Verify/Verify";
 
 export const router = createBrowserRouter([
   {
@@ -107,6 +110,14 @@ export const router = createBrowserRouter([
         path: "bai-dang-user",
         element: <PostListUser />,
       },
+      {
+        path: "thong-ke",
+        element: <Statistic />,
+      },
+      {
+        path: "nguoi-dung",
+        element: <UserManager />,
+      },
       // admin
       {
         path: "bai-dang-admin",
@@ -133,6 +144,10 @@ export const router = createBrowserRouter([
           {
             path: "doi-mat-khau",
             element: <ChangePassword />,
+          },
+          {
+            path: "xac-thuc",
+            element: <Verify />,
           },
         ],
       },

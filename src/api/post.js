@@ -40,6 +40,13 @@ export const postApi = {
       headers: { "Content-Type": "application/json" },
     });
   },
+  reNewVip(postId, isVip, dateTime) {
+    return http.post(`post/renew`, {
+      postId,
+      isVip,
+      dateTime,
+    });
+  },
 
   delete(id) {
     return http.delete(`post/${id}`);

@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
-import { MdEdit, MdDelete } from "react-icons/md";
+import { MdEdit, MdDelete, MdUpdate } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import { postApi } from "../../../api/post";
 import { AuthContext } from "../../../context/AuthContext";
 import { PostModal } from "../../../components/Admin/Modal/PostModal";
 import { toast } from "react-toastify";
+import { VipModal } from "../../../components/Admin/Modal/VipModal";
 
 export const PostListUser = () => {
   const [posts, setPosts] = useState([]);
@@ -15,6 +16,7 @@ export const PostListUser = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenUp, setIsOpenUp] = useState(false);
 
   const [postId, setPostId] = useState(null);
 
@@ -134,7 +136,6 @@ export const PostListUser = () => {
                 <thead className="bg-gray-100">
                   <tr>
                     {[
-                      "ID",
                       "Tiêu đề",
                       "Giá",
                       "Diện tích",
@@ -162,7 +163,7 @@ export const PostListUser = () => {
                           : "border-b border-gray-200"
                       }`}
                     >
-                      <td className="p-4 text-gray-700">{post.id}</td>
+                      {/* <td className="p-4 text-gray-700">{post.id}</td> */}
                       <td className="p-4 flex items-center gap-3">
                         {post.images.length > 0 && (
                           <img
@@ -186,6 +187,15 @@ export const PostListUser = () => {
                       </td>
                       <td className="p-4 text-center">
                         <div className="flex justify-center items-center gap-2">
+                          <button
+                            className="p-2 rounded-full hover:bg-gray-200 transition"
+                            onClick={() => {
+                              setPostId(post.id);
+                              setIsOpenUp(true);
+                            }}
+                          >
+                            <MdUpdate className="text-blue-600" />
+                          </button>
                           <button
                             className="p-2 rounded-full hover:bg-gray-200 transition"
                             onClick={() => {
@@ -255,6 +265,12 @@ export const PostListUser = () => {
       <PostModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        postId={postId}
+        setPostId={setPostId}
+      />
+      <VipModal
+        isOpen={isOpenUp}
+        setIsOpen={setIsOpenUp}
         postId={postId}
         setPostId={setPostId}
       />

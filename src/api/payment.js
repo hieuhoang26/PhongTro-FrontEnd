@@ -1,7 +1,14 @@
 import http from "./http";
 
 export const paymentApi = {
-  createVnPayPayment(amount, type, userId, postId = null) {
+  createVnPayPayment(
+    amount,
+    type,
+    userId,
+    postId = null,
+    isVip = null,
+    dateTime = null
+  ) {
     const params = {
       amount,
       type,
@@ -10,6 +17,12 @@ export const paymentApi = {
 
     if (postId) {
       params.postId = postId;
+    }
+    if (isVip) {
+      params.isVip = isVip;
+    }
+    if (dateTime) {
+      params.dateTime = dateTime;
     }
 
     return http.post("pay/vnpay", null, { params });
@@ -25,7 +38,15 @@ export const paymentApi = {
     return http.get(`pay/order?userId=${userId}`);
   },
 
-  //   handleVnPayReturn(allParams) {
-  //     return http.get("/return", { params: allParams });
-  //   },
+  // payWithWallet(amount, userId, postId) {
+  //   const data = {
+  //     amount,
+  //     userId,
+  //     postId,
+  //   };
+  //   return http.post("pay/pay-by-wallet", data);
+  // },
+  payWithWallet(data) {
+    return http.post("pay/pay-by-wallet", data);
+  },
 };

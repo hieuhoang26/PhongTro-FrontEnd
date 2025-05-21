@@ -8,6 +8,7 @@ import { LiaEdit } from "react-icons/lia";
 import { SlCalender } from "react-icons/sl";
 import { AuthContext } from "../../context/AuthContext";
 import { userApi } from "../../api/user";
+import { MdOutlineShowChart } from "react-icons/md";
 
 export const SidebarAdmin = () => {
   const { userId } = useContext(AuthContext);
@@ -93,6 +94,15 @@ export const SidebarAdmin = () => {
           </li>
           <li>
             <a
+              href="/admin/thong-ke"
+              className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
+            >
+              <MdOutlineShowChart size={20} />
+              <span>Thống kê</span>
+            </a>
+          </li>
+          <li>
+            <a
               href="/admin/bai-dang-admin"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
@@ -138,7 +148,7 @@ export const SidebarAdmin = () => {
           </li> */}
           <li>
             <a
-              href="/admin"
+              href="/admin/nguoi-dung"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <CiUser size={20} />
