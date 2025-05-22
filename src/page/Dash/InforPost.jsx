@@ -2,15 +2,35 @@ import { useEffect, useState } from "react";
 import { amenitiesList } from "../../utils/contant";
 import { locationApi } from "../../api/location";
 import { formatNumber, parseNumber } from "../../utils/other";
-import ImageUploadSection from "../../components/Admin/ImageUploadSection";
-import VideoUploadSection from "../../components/Admin/VideoUploadSection";
 import { AddPostNav } from "../../components/Admin/AddPostNav";
 import { IoWarningOutline } from "react-icons/io5";
+import { Controller } from "react-hook-form";
+import { ImageUploadSectionV2 } from "../../components/Admin/ImageUploadSectionV2";
+import { MAPBOX_TOKEN } from "../../utils/mapbox";
+import AddressMap from "../../components/Map/AddressMap";
 
-export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
+export const InfoPost = ({
+  register,
+  control,
+  errors,
+  setValue,
+  watch,
+  handleNext,
+  isVerify,
+  handleSubmit,
+}) => {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+
+  const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
+
+  // Watch form values
+  const streetNumber = watch("streetNumber");
+  const street = watch("street");
+  const ward = watch("ward");
+  const district = watch("district");
+  const city = watch("city");
 
   // Lấy danh sách tỉnh/thành phố khi component mount
   useEffect(() => {
@@ -21,92 +41,72 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
 
   // Khi chọn tỉnh => gọi danh sách quận/huyện
   useEffect(() => {
-    if (formData.city) {
-      locationApi.getDistricts(formData.city).then((res) => {
+    if (city) {
+      // city
+      locationApi.getDistricts(city).then((res) => {
         setDistricts(res.data);
-        setWards([]); // reset phường
+        setWards([]);
+        setValue("district", "");
+        setValue("ward", "");
       });
     }
-  }, [formData.city]);
+  }, [city, setValue]);
 
   // Khi chọn quận => gọi danh sách phường
   useEffect(() => {
-    if (formData.district) {
-      locationApi.getWards(formData.district).then((res) => {
+    if (district) {
+      // district
+      locationApi.getWards(district).then((res) => {
         setWards(res.data);
+        setValue("ward", "");
       });
     }
-  }, [formData.district]);
+  }, [district, setValue]);
 
+  // Update full address when location fields change
   useEffect(() => {
     const parts = [];
 
-    if (formData.streetNumber) parts.push(formData.streetNumber);
-    if (formData.street) parts.push(formData.street);
+    if (streetNumber) parts.push(streetNumber);
+    if (street) parts.push(street);
 
-    // Tìm tên phường/xã tương ứng với ID
-    const selectedWard = wards.find((w) => w.id === Number(formData.ward));
+    const selectedWard = wards.find((w) => w.id === Number(ward));
     if (selectedWard) parts.push(selectedWard.name);
 
-    // Tìm tên quận/huyện tương ứng với ID
-    const selectedDistrict = districts.find(
-      (d) => d.id === Number(formData.district)
-    );
+    const selectedDistrict = districts.find((d) => d.id === Number(district));
     if (selectedDistrict) parts.push(selectedDistrict.name);
 
-    // Tìm tên tỉnh/thành phố tương ứng với ID
-    const selectedCity = cities.find((c) => c.id === Number(formData.city));
+    const selectedCity = cities.find((c) => c.id === Number(city));
     if (selectedCity) parts.push(selectedCity.name);
 
-    // Ghép các phần lại với nhau
     const fullAddress = parts.join(", ");
-
-    setFormData((prev) => ({
-      ...prev,
-      fullAddress: fullAddress,
-    }));
+    setValue("fullAddress", fullAddress);
   }, [
-    formData.streetNumber,
-    formData.street,
-    formData.ward,
-    formData.district,
-    formData.city,
+    streetNumber,
+    street,
+    ward,
+    district,
+    city,
     wards,
     districts,
     cities,
+    setValue,
   ]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleCategoryChange = (e) => {
+    const { value, checked } = e.target;
+    const checkboxValue = Number(value);
 
-    if (type === "checkbox") {
-      const checkboxValue = Number(value); // hoặc parseInt(value)
-      setFormData((prev) => {
-        if (checked) {
-          return { ...prev, categories: [...prev.categories, checkboxValue] };
-        } else {
-          return {
-            ...prev,
-            categories: prev.categories.filter(
-              (item) => item !== checkboxValue
-            ),
-          };
-        }
-      });
+    const currentCategories = watch("categories") || [];
+
+    if (checked) {
+      setValue("categories", [...currentCategories, checkboxValue]);
     } else {
-      // Ép kiểu các trường city, district, ward về number
-      const isNumberField = ["city", "district", "ward"].includes(name);
-      setFormData((prev) => ({
-        ...prev,
-        [name]: isNumberField ? Number(value) : value,
-      }));
+      setValue(
+        "categories",
+        currentCategories.filter((item) => item !== checkboxValue)
+      );
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission logic here
   };
 
   return (
@@ -141,11 +141,10 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       Loại chuyên mục <span className="text-red-500">(*)</span>
                     </label>
                     <select
-                      name="typeId"
-                      className="w-full p-2 text-base border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={formData.typeId}
-                      onChange={handleChange}
-                      required
+                      {...register("typeId")}
+                      className={`w-full p-2 text-base border ${
+                        errors.typeId ? "border-red-500" : "border-gray-300"
+                      } rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     >
                       <option value="">-- Chọn loại chuyên mục --</option>
                       {types.map((cat) => (
@@ -154,6 +153,11 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                         </option>
                       ))}
                     </select>
+                    {errors.typeId && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.typeId.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -172,11 +176,10 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                     Tỉnh/Thành phố <span className="text-red-500">(*)</span>
                   </label>
                   <select
-                    name="city"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
+                    {...register("city")}
+                    className={`w-full p-2 border ${
+                      errors.city ? "border-red-500" : "border-gray-300"
+                    } rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     <option value="">-- Chọn Tỉnh/TP --</option>
                     {cities.map((c) => (
@@ -185,6 +188,11 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       </option>
                     ))}
                   </select>
+                  {errors.city && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.city.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Quận/Huyện */}
@@ -193,11 +201,11 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                     Quận/Huyện <span className="text-red-500">(*)</span>
                   </label>
                   <select
-                    name="district"
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.district}
-                    onChange={handleChange}
-                    required
+                    {...register("district")}
+                    className={`w-full p-2 border ${
+                      errors.district ? "border-red-500" : "border-gray-300"
+                    } rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={!watch("city")}
                   >
                     <option value="">-- Chọn quận huyện --</option>
                     {districts.map((d) => (
@@ -206,6 +214,11 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       </option>
                     ))}
                   </select>
+                  {errors.district && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.district.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Phường/Xã */}
@@ -214,10 +227,9 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                     Phường/Xã
                   </label>
                   <select
-                    name="ward"
+                    {...register("ward")}
                     className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.ward}
-                    onChange={handleChange}
+                    disabled={!watch("district")}
                   >
                     <option value="">-- Chọn phường xã --</option>
                     {wards.map((w) => (
@@ -235,10 +247,8 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                   </label>
                   <input
                     type="text"
-                    name="street"
+                    {...register("street")}
                     className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.street}
-                    onChange={handleChange}
                     placeholder="Nhập Đường/Phố"
                   />
                 </div>
@@ -250,10 +260,8 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                   </label>
                   <input
                     type="text"
-                    name="streetNumber"
+                    {...register("streetNumber")}
                     className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={formData.streetNumber}
-                    onChange={handleChange}
                     placeholder="Nhập số nhà"
                   />
                 </div>
@@ -265,16 +273,28 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                   </label>
                   <input
                     type="text"
-                    name="fullAddress"
+                    {...register("fullAddress")}
                     className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
                     readOnly
-                    value={formData.fullAddress}
                     placeholder="Địa chỉ"
                   />
                 </div>
               </div>
             </div>
-
+            {/* Map */}
+            <div className="bg-white shadow-sm rounded p-4 mb-4">
+              {watch("fullAddress") && (
+                <div className="mb-6">
+                  <div className="text-base font-semibold text-gray-700 mb-2">
+                    Xem vị trí trên bản đồ
+                  </div>
+                  <AddressMap
+                    fullAddress={watch("fullAddress")}
+                    setValue={setValue}
+                  />
+                </div>
+              )}
+            </div>
             {/* Description Section */}
             <div
               id="scrollspy_thongtinmota"
@@ -288,19 +308,35 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       Tiêu đề <span className="text-red-500">(*)</span>
                     </label>
                     <textarea
-                      name="title"
-                      className="form-textarea w-full p-2 border border-secondary-subtle rounded-lg border-gray-300"
+                      {...register("title", {
+                        minLength: {
+                          value: 10,
+                          message: "Tối thiểu 30 ký tự",
+                        },
+                        maxLength: {
+                          value: 100,
+                          message: "Tối đa 100 ký tự",
+                        },
+                      })}
+                      className={`form-textarea w-full p-2 border ${
+                        errors.title ? "border-red-500" : "border-gray-300"
+                      } rounded-lg`}
                       rows="2"
-                      required
-                      minLength="30"
-                      maxLength="100"
-                      value={formData.title}
-                      onChange={handleChange}
                     ></textarea>
-                    <p className="mt-2 mb-0 text-gray-500 text-sm">
-                      <span>{formData.title.length}</span> (Tối thiểu 30 ký tự,
-                      tối đa 100 ký tự)
-                    </p>
+                    <div className="flex justify-between">
+                      {errors.title ? (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.title.message}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-sm text-gray-500">
+                          {watch("title")?.length || 0}/100 ký tự
+                        </p>
+                      )}
+                      <p className="mt-1 text-sm text-gray-500">
+                        Tối thiểu 30 ký tự, tối đa 100 ký tự
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="col-span-1">
@@ -309,19 +345,37 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       Nội dung mô tả <span className="text-red-500">(*)</span>
                     </label>
                     <textarea
-                      name="description"
-                      className="form-textarea w-full p-2 border border-secondary-subtle rounded-lg border-gray-300"
+                      {...register("description", {
+                        minLength: {
+                          value: 10,
+                          message: "Tối thiểu 50 ký tự",
+                        },
+                        maxLength: {
+                          value: 5000,
+                          message: "Tối đa 5000 ký tự",
+                        },
+                      })}
+                      className={`form-textarea w-full p-2 border ${
+                        errors.description
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } rounded-lg`}
                       rows="5"
-                      required
-                      minLength="50"
-                      maxLength="1000"
-                      value={formData.description}
-                      onChange={handleChange}
                     ></textarea>
-                    <p className="mt-2 mb-0 text-gray-500 text-sm">
-                      <span>{formData.description.length}</span> (Tối thiểu 50
-                      ký tự, tối đa 5000 ký tự)
-                    </p>
+                    <div className="flex justify-between">
+                      {errors.description ? (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.description.message}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-sm text-gray-500">
+                          {watch("description")?.length || 0}/5000 ký tự
+                        </p>
+                      )}
+                      <p className="mt-1 text-sm text-gray-500">
+                        Tối thiểu 50 ký tự, tối đa 5000 ký tự
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div className="md:w-7/12">
@@ -331,33 +385,35 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                     </label>
                     <div className="flex">
                       <input
-                        id="giachothue"
-                        name="price"
-                        pattern="[0-9.]+"
-                        type="text"
-                        className="form-input w-full p-2 border border-secondary-subtle rounded-l-lg border-gray-300 border-gray-300"
-                        required
-                        value={formatNumber(formData.price)}
+                        {...register("price")}
+                        className={`form-input w-full p-2 border ${
+                          errors.price ? "border-red-500" : "border-gray-300"
+                        } rounded-l-lg`}
                         onChange={(e) => {
-                          const rawValue = parseNumber(e.target.value);
-                          handleChange({
-                            target: {
-                              name: e.target.name,
-                              value: rawValue,
-                            },
-                          });
+                          // const rawValue = parseNumber(e.target.value);
+                          const rawValue = e.target.value;
+                          if (!isNaN(rawValue)) {
+                            setValue("price", rawValue, {
+                              shouldValidate: true,
+                            });
+                          }
                         }}
+                        value={watch("price") || ""}
                       />
+
                       <select
                         name="priceUnit"
                         className="form-select p-2 border border-secondary-subtle rounded-r-lg border-gray-300 "
-                        // value={formData.priceUnit}
-                        onChange={handleChange}
                       >
                         <option value="0">đồng/tháng</option>
                         <option value="1">đồng/m2/tháng</option>
                       </select>
                     </div>
+                    {errors.price && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.price.message}
+                      </p>
+                    )}
                     <p className="text-muted mb-0 text-sm">
                       Nhập đầy đủ số, ví dụ 1 triệu thì nhập là 1000000
                     </p>
@@ -370,19 +426,30 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                     </label>
                     <div className="flex">
                       <input
-                        name="area"
+                        {...register("area", {
+                          min: {
+                            value: 1,
+                            message: "Diện tích phải lớn hơn 0",
+                          },
+                          max: {
+                            value: 1000,
+                            message: "Diện tích tối đa 1000m²",
+                          },
+                        })}
                         type="number"
-                        pattern="[0-9.]+"
-                        max="1000"
-                        className="form-input w-full p-2 border border-secondary-subtle rounded-l-lg border-gray-300"
-                        required
-                        value={formData.area}
-                        onChange={handleChange}
+                        className={`form-input w-full p-2 border ${
+                          errors.area ? "border-red-500" : "border-gray-300"
+                        } rounded-l-lg`}
                       />
                       <span className="input-group-text border-secondary-subtle bg-white px-3 border rounded-r flex items-center border-gray-300">
                         m<sup>2</sup>
                       </span>
                     </div>
+                    {errors.area && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.area.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -395,13 +462,31 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                 {amenitiesList.map((feature) => (
                   <div key={feature.id} className="flex items-center space-x-2">
                     <input
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                      name="categories"
                       type="checkbox"
                       id={`feature-${feature.id}`}
                       value={feature.id}
-                      checked={formData.categories.includes(feature.id)}
-                      onChange={handleChange}
+                      checked={
+                        watch("categories")?.includes(feature.id) || false
+                      }
+                      onChange={(e) => {
+                        const currentCategories = watch("categories") || [];
+                        if (e.target.checked) {
+                          setValue(
+                            "categories",
+                            [...currentCategories, feature.id],
+                            {
+                              shouldValidate: true,
+                            }
+                          );
+                        } else {
+                          setValue(
+                            "categories",
+                            currentCategories.filter((id) => id !== feature.id),
+                            { shouldValidate: true }
+                          );
+                        }
+                      }}
+                      className="form-checkbox h-5 w-5 text-blue-600"
                     />
                     <label
                       className="text-sm text-gray-700 cursor-pointer"
@@ -412,23 +497,36 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                   </div>
                 ))}
               </div>
+              {errors.categories && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.categories.message}
+                </p>
+              )}
             </div>
 
             {/* Images Section */}
             <div id="scrollspy_hinhanh">
-              <ImageUploadSection
-                formData={formData}
-                setFormData={setFormData}
+              <Controller
+                name="images"
+                control={control}
+                rules={{
+                  validate: (value) =>
+                    value?.length > 0 || "Cần ít nhất 1 hình ảnh",
+                }}
+                render={({ field }) => (
+                  <ImageUploadSectionV2
+                    value={field.value}
+                    onChange={(files) => {
+                      field.onChange(files);
+                    }}
+                    error={errors.images}
+                  />
+                )}
               />
             </div>
 
             {/* Video Section */}
-            <div id="scrollspy_video">
-              <VideoUploadSection
-                formData={formData}
-                setFormData={setFormData}
-              />
-            </div>
+            <div id="scrollspy_video"></div>
 
             {/* Contact Information */}
             <div
@@ -446,12 +544,12 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       Họ Tên
                     </label>
                     <input
-                      id="contactName"
-                      type="text"
-                      name="contactName"
-                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-sm"
-                      readOnly
-                      value="Nguyễn Văn A"
+                      {...register("username", {
+                        required: "Vui lòng nhập họ tên",
+                      })}
+                      className={`w-full p-3 border ${
+                        errors.username ? "border-red-500" : "border-gray-300"
+                      } rounded-lg text-sm`}
                     />
                   </div>
                 </div>
@@ -464,17 +562,28 @@ export const InfoPost = ({ formData, setFormData, handleNext, isVerify }) => {
                       Số điện thoại
                     </label>
                     <input
-                      id="contactPhone"
-                      type="number"
-                      name="contactPhone"
-                      className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-sm"
-                      readOnly
-                      value="0901234567"
+                      {...register("phone", {
+                        required: "Vui lòng nhập số điện thoại",
+                        pattern: {
+                          value: /^[0-9]{10,11}$/,
+                          message: "Số điện thoại không hợp lệ",
+                        },
+                      })}
+                      className={`w-full p-3 border ${
+                        errors.phone ? "border-red-500" : "border-gray-300"
+                      } rounded-lg text-sm`}
                     />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.phone.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
+            <input type="hidden" {...register("latitude")} />
+            <input type="hidden" {...register("longitude")} />
 
             {/* Submit Button */}
             <div className="my-5">

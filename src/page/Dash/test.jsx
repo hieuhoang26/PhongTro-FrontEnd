@@ -1,75 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { set } from "react-hook-form";
-import { IoMdArrowBack } from "react-icons/io";
-import { PaymentSummary } from "./PaymentSummary";
-
-import icon_vnpay from "../../assets/icon_vnpay.png";
-import { IoWalletOutline } from "react-icons/io5";
-
-export const packages = [
-  {
-    value: "6",
-    title: "Tin miễn phí",
-    priceDay: "(0/ngày)",
-    priceWeek: "(0/tuần)",
-    priceMonth: "(0/tháng)",
-  },
-  {
-    value: "5",
-    title: "Tin thường",
-    priceDay: "(2.000/ngày)",
-    priceWeek: "(12.000/tuần)",
-    priceMonth: "(48.000/tháng)",
-  },
-  {
-    value: "4",
-    title: "Tin VIP 3",
-    priceDay: "(10.000/ngày)",
-    priceWeek: "(63.000/tuần)",
-    priceMonth: "(240.000/tháng)",
-  },
-  {
-    value: "3",
-    title: "Tin VIP 2",
-    priceDay: "(20.000/ngày)",
-    priceWeek: "(133.000/tuần)",
-    priceMonth: "(540.000/tháng)",
-  },
-  {
-    value: "2",
-    title: "Tin VIP 1",
-    priceDay: "(30.000/ngày)",
-    priceWeek: "(190.000/tuần)",
-    priceMonth: "(800.000/tháng)",
-  },
-  {
-    value: "1",
-    title: "Tin VIP nổi bật",
-    priceDay: "(50.000/ngày)",
-    priceWeek: "(315.000/tuần)",
-    priceMonth: "(1.200.000/tháng)",
-  },
-];
-
 export const PayPost = ({
   setStep,
+  formData,
+  setFormData,
   handleSubmit,
   totalAmount,
   setTotalAmount,
   payMethod,
   setPayMethod,
-  control,
-  setValue,
-  watch,
 }) => {
   const [packageType, setPackageType] = useState("day"); // day, week, month
+
   const [selectedPackage, setSelectedPackage] = useState("4"); // to VIP
+
   const [totalDay, setTotalDay] = useState("3");
   const [totalWeek, setTotalWeek] = useState("1");
   const [totalMonth, setTotalMonth] = useState("1");
+
   const [postLabel, setPostLabel] = useState(false);
   const [usePostTiktok, setUsePostTiktok] = useState(false);
-  const [error, setError] = useState("");
+
+  const [error, setError] = useState(""); // Thêm state để lưu thông báo lỗi
 
   const pkg = packages.find((p) => p.value === selectedPackage);
 
@@ -83,9 +33,8 @@ export const PayPost = ({
       if (packageType === "month") duration = parseInt(totalMonth) * 30;
 
       now.setDate(now.getDate() + duration);
-      return now.toISOString();
+      return now.toISOString(); // Hoặc format bạn muốn
     };
-
     const calculateTotal = () => {
       const pricePerUnit = parseInt(getPricePerUnit());
       let duration = 1;
@@ -96,6 +45,7 @@ export const PayPost = ({
 
       let total = pricePerUnit * duration;
 
+      // Add label cost if selected (2000 per day)
       if (postLabel) {
         const labelDays =
           packageType === "day"
@@ -114,18 +64,18 @@ export const PayPost = ({
 
     setTotalAmount(total);
 
-    // Cập nhật giá trị vào form thông qua React Hook Form
-    setValue("isVip", selectedPackage);
-    setValue("vipExpiryDate", expiryDate);
+    setFormData((prev) => ({
+      ...prev,
+      isVip: selectedPackage,
+      vipExpiryDate: expiryDate,
+    }));
   }, [
     selectedPackage,
     packageType,
     totalDay,
     totalWeek,
     totalMonth,
-    postLabel,
-    setValue,
-    setTotalAmount,
+    setFormData,
   ]);
 
   useEffect(() => {
@@ -164,11 +114,11 @@ export const PayPost = ({
       </option>
     ));
   };
-
   const handlePaymentSubmit = (e) => {
+    // Kiểm tra điều kiện trước khi submit
     if (selectedPackage === "6") {
       if (packageType !== "day") {
-        setError("Gói Miễn phí chỉ áp dụng cho loại ngày (day)");
+        setError("Gói Miễn phí  chỉ áp dụng cho loại ngày (day)");
         return;
       }
       if (parseInt(totalDay) > 3) {
@@ -177,13 +127,13 @@ export const PayPost = ({
       }
     }
 
+    // Nếu không có lỗi thì submit
     setError("");
     handleSubmit(e);
   };
 
   const handlePayOptionChange = (optionId) => {
     setPayMethod(optionId === payMethod ? null : optionId);
-    setValue("payMethod", optionId); // Cập nhật giá trị vào form
   };
 
   return (
@@ -210,10 +160,10 @@ export const PayPost = ({
         </div>
       </div>
       {/* main */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-[1200px] mt-10 flex gap-3">
+      <div class="flex justify-center">
+        <div class="w-full max-w-[1200px]  mt-10 flex gap-3">
           {/* Main */}
-          <div className="w-7/10">
+          <div class="w-7/10">
             <div className="bg-white shadow-sm rounded p-4 mb-4">
               <div className="text-lg font-medium mb-3">Chọn gói tin đăng</div>
               {/* Selection */}
@@ -339,6 +289,7 @@ export const PayPost = ({
 
               {/* Tick  */}
               <div className="mt-3 space-y-3">
+                {/* Checkbox: Gắn nhãn cho thuê nhanh */}
                 <div className="flex items-start space-x-2">
                   <input
                     id="post_label"
@@ -354,6 +305,7 @@ export const PayPost = ({
                   </label>
                 </div>
 
+                {/* Checkbox: Đăng video Tiktok */}
                 {["1", "2", "3", "4"].includes(selectedPackage) && (
                   <>
                     <div className="flex items-start space-x-2">
@@ -395,7 +347,7 @@ export const PayPost = ({
 
               {/* Infor Package */}
               <div>
-                {selectedPackage === "6" && (
+                <div className={`${selectedPackage !== "6" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink-1">
@@ -411,9 +363,9 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {selectedPackage === "5" && (
+                <div className={`${selectedPackage !== "5" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink">
@@ -429,9 +381,9 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {selectedPackage === "4" && (
+                <div className={`${selectedPackage !== "4" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink">
@@ -454,9 +406,9 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {selectedPackage === "3" && (
+                <div className={`${selectedPackage !== "3" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink">
@@ -476,9 +428,9 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {selectedPackage === "2" && (
+                <div className={`${selectedPackage !== "2" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink">
@@ -498,9 +450,9 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {selectedPackage === "1" && (
+                <div className={`${selectedPackage !== "1" ? "hidden" : ""}`}>
                   <div className="flex items-start text-sm bg-yellow-100 text-yellow-800 p-4 mt-3 mb-0 rounded">
                     <i className="icon info-circle mt-1 mr-2 flex-shrink-0"></i>
                     <div className="flex-shrink">
@@ -522,14 +474,12 @@ export const PayPost = ({
                       </p>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
             {/* Method to Pay */}
-            <div className="bg-white shadow-sm rounded p-4 mb-4">
-              <div className="text-xl font-medium">
-                Chọn phương thức thanh toán
-              </div>
+            <div class="bg-white shadow-sm rounded p-4 mb-4">
+              <div class="text-xl font-medium">Chọn phương thức thanh toán</div>
 
               {selectedPackage === "6" ? (
                 <div className="text-gray-700 font-medium mt-3">
@@ -546,6 +496,7 @@ export const PayPost = ({
                             className="form-checkbox w-5 h-5 text-blue-600"
                             checked={payMethod === option.id}
                             onChange={() => handlePayOptionChange(option.id)}
+                            // Optional: handle checked state
                           />
                           {option.icon}
                           <span className="text-gray-800 font-medium">
@@ -571,17 +522,16 @@ export const PayPost = ({
               </button>
 
               <button
-                className="w-full rounded-xl bg-red-600 text-white text-sm font-medium p-3 ms-1 whitespace-nowrap hover:bg-red-700 transition-colors"
+                className="w-full rounded-xl bg-red-600 text-white text-sm font-medium p-3 ms-1 whitespace-nowrap opacity-50 cursor-auto"
                 type="button"
                 onClick={handlePaymentSubmit}
               >
-                Thanh toán{" "}
-                <span className="ml-1">{totalAmount.toLocaleString()}₫</span>
+                Thanh toán <span className="ml-1">???</span>
               </button>
             </div>
           </div>
           {/* All infor  */}
-          <div className="w-3/10">
+          <div class="w-3/10">
             <PaymentSummary
               packageType={packageType}
               selectedPackage={selectedPackage}
@@ -598,26 +548,3 @@ export const PayPost = ({
     </div>
   );
 };
-const paymentOptions = [
-  {
-    id: 1,
-    name: "Ví tài khoản",
-    icon: (
-      <div className="w-10 h-10 flex justify-center items-center">
-        {/* <img src={icon_vnpay} alt="VNPAY" className="object-contain h-8" /> */}
-        <IoWalletOutline size={24} />
-      </div>
-    ),
-    href: "/",
-  },
-  {
-    id: 2,
-    name: "Ví điện tử VNPAY",
-    icon: (
-      <div className="w-10 h-10 flex justify-center items-center">
-        <img src={icon_vnpay} alt="VNPAY" className="object-contain h-8" />
-      </div>
-    ),
-    href: "/",
-  },
-];

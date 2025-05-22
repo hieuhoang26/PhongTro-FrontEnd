@@ -84,5 +84,5 @@ export const formatNumber = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 export const parseNumber = (str) => {
-  return str.replace(/\./g, "");
+  return Number(str.replace(/\./g, ""));
 };
