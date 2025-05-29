@@ -35,8 +35,14 @@ export const PostCardV3 = ({ post }) => {
     }
   };
 
-  const getImage = (index) => {
-    return post.images?.[index] || placeholder;
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
+  const getImage = (displayIndex) => {
+    // Lọc ra các URL là ảnh
+    const imageUrls = post.images?.filter((url) => isImageUrl(url)) || [];
+    return imageUrls[displayIndex] || placeholder;
   };
 
   return (

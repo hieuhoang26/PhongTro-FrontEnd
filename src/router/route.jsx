@@ -29,6 +29,10 @@ import { MapBox } from "../components/Map/MapBox";
 import Statistic from "../page/Dash/Admin/Statistic/Statistic";
 import UserManager from "../page/Dash/Admin/Acc/UserManager";
 import Verify from "../page/Dash/User/Verify/Verify";
+import { VerifyManager } from "../page/Dash/Admin/Acc/VerifyManager";
+import { ReportManager } from "../page/Dash/Admin/ReportManager";
+import { BlogList } from "../page/BlogList";
+import BlogDetail from "../page/BlogDetail";
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +96,14 @@ export const router = createBrowserRouter([
         path: "/tin-luu",
         element: <SavedPost />,
       },
+      {
+        path: "/blog",
+        element: <BlogList />,
+      },
+      {
+        path: "/blog/:slug",
+        element: <BlogDetail />,
+      },
       // {
       //   path: "/chat",
       //   element: <WebSocketChatTest />,
@@ -126,6 +138,14 @@ export const router = createBrowserRouter([
       {
         path: "duyet-tin-dang",
         element: <PendingPost />,
+      },
+      {
+        path: "duyet-tai-khoan",
+        element: <VerifyManager />,
+      },
+      {
+        path: "duyet-bao-xau",
+        element: <ReportManager />,
       },
 
       {

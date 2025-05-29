@@ -32,6 +32,17 @@ const tabs = [
 
 export default function Home({ typeId }) {
   const [activeTab, setActiveTab] = useState("mac-dinh");
+  const titles = {
+    1: "Kênh thông tin Phòng Trọ số 1 Việt Nam",
+    2: "Cho Thuê Nhà Nguyên Căn, Giá Rẻ, Chính Chủ, Mới Nhất",
+    3: "Cho Thuê Căn Hộ Chung Cư, Giá Rẻ, View Đẹp, Mới Nhất",
+    4: "Cho Thuê Căn Hộ Mini + Chung Cư Mini Giá Rẻ, Mới Nhất",
+    5: "Cho Thuê Căn Hộ Dịch Vụ, Giá Rẻ, Mới Nhất",
+    6: "Tìm Người Ở Ghép, Tìm Nam Ở Ghép, Tìm Nữ Ở Ghép, Mới Nhất",
+    7: "Cho Thuê Mặt Bằng, Giá Rẻ, Chính Chủ, Mới Nhất",
+  };
+
+  const titleText = titles[typeId] || "Kênh thông tin Phòng Trọ số 1 Việt Nam";
 
   const {
     postsData,
@@ -68,7 +79,7 @@ export default function Home({ typeId }) {
         <div className="w-7/10 ">
           <header className="mt-2 mb-3">
             <h1 className="text-2xl font-medium mb-2 leading-snug">
-              Cho thuê Phòng Trọ - Kênh Phòng Trọ số 1 Việt Nam
+              {titleText}
             </h1>
             <p className="text-sm m-0">Có 71.657 tin đăng cho thuê</p>
           </header>
@@ -78,6 +89,11 @@ export default function Home({ typeId }) {
               <div
                 key={index}
                 className="shadow-md text-black-400 cursor-pointer hover:text-orange-600 rounded-bl-md rounded-br-md"
+                onClick={() => {
+                  fetchPosts({
+                    cityId: item.id,
+                  });
+                }}
               >
                 <img
                   src={item.src}
@@ -175,11 +191,8 @@ export default function Home({ typeId }) {
             </div>
             <div className="bg-white border border-gray-300 p-4 rounded-xl shadow ">
               <div className="text-xl font-semibold mb-3">Tin mới đăng</div>
-              <ul>
-                {posts.map((post, index) => (
-                  <PostItemNav key={index} {...post} />
-                ))}
-              </ul>
+
+              <PostItemNav />
             </div>
           </div>
         </div>
@@ -187,21 +200,3 @@ export default function Home({ typeId }) {
     </div>
   );
 }
-const posts = [
-  {
-    title: "CHDV Mới Khai Trương Nội Thất Mới 100% Qua Q1 chỉ 3 phút đi bộ",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/sp_1745158968.jpg",
-    price: "6 triệu/tháng",
-    time: "38 phút trước",
-    link: "/chdv-moi-khai-truong-noi-that-moi-100-qua-q1-chi-3-phut-di-bo-pr679876.html",
-  },
-  {
-    title: "(Thủ Đức) - CẦN CHO THUÊ GẤP TẦNG TRỆT LÀM VĂN PHÒNG",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/vp5_1745157031.jpg",
-    price: "17 triệu/tháng",
-    time: "1 giờ trước",
-    link: "/thu-duc-can-cho-thue-gap-tang-tret-lam-van-phong-pr679874.html",
-  },
-];

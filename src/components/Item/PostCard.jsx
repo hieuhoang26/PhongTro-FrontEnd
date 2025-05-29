@@ -34,6 +34,15 @@ export const PostCard = ({ post }) => {
       console.error("Error toggling like:", error);
     }
   };
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
+  const getImage = (displayIndex) => {
+    // Lọc ra các URL là ảnh
+    const imageUrls = post.images?.filter((url) => isImageUrl(url)) || [];
+    return imageUrls[displayIndex] || "/placeholder-image.jpg";
+  };
   return (
     <li className="bg-white shadow-sm rounded p-4 mb-2 grid sm:flex gap-3 h-full sm:h-[210px] overflow-hidden ">
       <div className="sm:w-2/5 relative h-full ">
@@ -44,7 +53,7 @@ export const PostCard = ({ post }) => {
         >
           <div className="aspect-[4/3] h-full ">
             <img
-              src={post.images[0]}
+              src={getImage(0)}
               alt="Main"
               className="h-full w-full object-cover rounded"
               loading="lazy"
@@ -70,12 +79,21 @@ export const PostCard = ({ post }) => {
               post.isVip === 2 ? "text-blue-500" : ""
             }`}
           >
-            <span className="inline-flex mr-1">
-              {[...Array(post.isVip || 0)].map((_, i) => (
-                <FaStar key={i} className="text-yellow-300" size={14} />
-              ))}
+            <span
+              className="text-ellipsis overflow-hidden"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              <span className="inline-flex mr-1">
+                {[...Array(post.isVip)].map((_, i) => (
+                  <FaStar key={i} className="text-yellow-300" size={14} />
+                ))}
+              </span>
+              {post.title}
             </span>
-            {post.title}
           </a>
         </h3>
 

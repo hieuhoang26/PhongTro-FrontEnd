@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { set } from "react-hook-form";
 import { IoMdArrowBack } from "react-icons/io";
 import { PaymentSummary } from "./PaymentSummary";
 
 import icon_vnpay from "../../assets/icon_vnpay.png";
 import { IoWalletOutline } from "react-icons/io5";
+import { AuthContext } from "../../context/AuthContext";
 
 export const packages = [
   {
@@ -70,6 +71,7 @@ export const PayPost = ({
   const [postLabel, setPostLabel] = useState(false);
   const [usePostTiktok, setUsePostTiktok] = useState(false);
   const [error, setError] = useState("");
+  const { userId, isVerify, role } = useContext(AuthContext);
 
   const pkg = packages.find((p) => p.value === selectedPackage);
 
@@ -531,7 +533,7 @@ export const PayPost = ({
                 Chọn phương thức thanh toán
               </div>
 
-              {selectedPackage === "6" ? (
+              {selectedPackage === "6" || role === "ROLE_ADMIN" ? (
                 <div className="text-gray-700 font-medium mt-3">
                   Gói miễn phí
                 </div>

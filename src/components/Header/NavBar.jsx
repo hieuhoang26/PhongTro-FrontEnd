@@ -77,7 +77,7 @@ export default function NavBar() {
           {/* Render Blog item separately */}
           <li className="h-full me-4">
             <a
-              href="/blog.html"
+              href="/blog"
               title="Blog"
               // onClick={() => setActiveId("BLOG")}
               // onClick={() => handleItemClick(item.id, item.href)}

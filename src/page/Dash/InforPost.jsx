@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { amenitiesList } from "../../utils/contant";
 import { locationApi } from "../../api/location";
 import { formatNumber, parseNumber } from "../../utils/other";
@@ -8,6 +8,7 @@ import { Controller } from "react-hook-form";
 import { ImageUploadSectionV2 } from "../../components/Admin/ImageUploadSectionV2";
 import { MAPBOX_TOKEN } from "../../utils/mapbox";
 import AddressMap from "../../components/Map/AddressMap";
+import { AuthContext } from "../../context/AuthContext";
 
 export const InfoPost = ({
   register,
@@ -16,9 +17,12 @@ export const InfoPost = ({
   setValue,
   watch,
   handleNext,
-  isVerify,
+  // isVerify,
   handleSubmit,
 }) => {
+  const { isVerify, role } = useContext(AuthContext);
+  console.log("isVerify", isVerify);
+
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -147,11 +151,27 @@ export const InfoPost = ({
                       } rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     >
                       <option value="">-- Chọn loại chuyên mục --</option>
-                      {types.map((cat) => (
+                      {/* {types.map((cat) => (
+                        
                         <option key={cat.value} value={cat.value}>
                           {cat.label}
                         </option>
-                      ))}
+                      ))} */}
+                      {types.map((cat) => {
+                        const allowedTypeId = 6;
+                        return (
+                          <option
+                            key={cat.value}
+                            value={cat.value}
+                            disabled={
+                              role === "ROLE_USER" &&
+                              cat.value !== allowedTypeId
+                            }
+                          >
+                            {cat.label}
+                          </option>
+                        );
+                      })}
                     </select>
                     {errors.typeId && (
                       <p className="mt-1 text-sm text-red-600">
@@ -603,11 +623,11 @@ export const InfoPost = ({
   );
 };
 const types = [
-  { value: "1", label: "Phòng trọ, nhà trọ" },
-  { value: "2", label: "Nhà thuê nguyên căn" },
-  { value: "3", label: "Cho thuê căn hộ" },
-  { value: "4", label: "Cho thuê căn hộ mini" },
-  { value: "5", label: "Cho thuê căn hộ dịch vụ" },
-  { value: "6", label: "Tìm người ở ghép" },
-  { value: "7", label: "Cho thuê mặt bằng + Văn phòng" },
+  { value: 1, label: "Phòng trọ, nhà trọ" },
+  { value: 2, label: "Nhà thuê nguyên căn" },
+  { value: 3, label: "Cho thuê căn hộ" },
+  { value: 4, label: "Cho thuê căn hộ mini" },
+  { value: 5, label: "Cho thuê căn hộ dịch vụ" },
+  { value: 6, label: "Tìm người ở ghép" },
+  { value: 7, label: "Cho thuê mặt bằng + Văn phòng" },
 ];

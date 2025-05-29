@@ -51,7 +51,7 @@ export const ChatBot = () => {
 
     const userMessage = { from: "user", text: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
-    callGeminiAPI(input.trim());
+    callGeminiAPI(" phongtro123" + input.trim());
     setInput("");
   };
 
@@ -117,7 +117,3 @@ export const ChatBot = () => {
     </>
   );
 };
-
-{
-  /* fixed bottom-[calc(4rem+1.5rem)] right-4 z-[999] bg-white p-6 rounded-lg border border-gray-200 w-[440px] h-[500px] 2xl:h-[600px] [@media(min-width:1920px)]:h-[700px] shadow-md */
-}

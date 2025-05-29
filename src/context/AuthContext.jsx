@@ -25,14 +25,20 @@ const AuthProvider = ({ children }) => {
     if (storedUser) {
       setUserId(storedUser.id);
       setRole(storedUser.role);
+      setIsVerify(storedUser.verify);
     }
   }, []);
 
   const login = (data) => {
     setUserId(data.id);
     setRole(data.role);
-    setIsVerify(data.verify);
-    setProfileToSession({ id: data.id, role: data.role, phone: data.phone });
+    // setIsVerify(data.verify);
+    setProfileToSession({
+      id: data.id,
+      role: data.role,
+      phone: data.phone,
+      verify: data.verify,
+    });
     setAccessTokenToSession(data.accessToken);
     setRefreshTokenToSession(data.refreshToken);
     setIsAuthenticated(true);
@@ -42,6 +48,7 @@ const AuthProvider = ({ children }) => {
     clearSession();
     setUserId(null);
     setRole(null);
+    setIsVerify(null);
     setIsAuthenticated(false);
     window.location.href = "/";
   };

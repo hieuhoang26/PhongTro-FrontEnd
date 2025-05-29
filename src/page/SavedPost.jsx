@@ -94,11 +94,8 @@ export default function SavedPost() {
           <div className="grid grid-cols-1  gap-2">
             <div className="bg-white border border-gray-300 p-4 rounded-xl shadow ">
               <div className="text-xl font-semibold mb-3">Tin mới đăng</div>
-              <ul>
-                {posts.map((post, index) => (
-                  <PostItemNav key={index} {...post} />
-                ))}
-              </ul>
+
+              <PostItemNav />
             </div>
           </div>
         </div>
@@ -106,21 +103,3 @@ export default function SavedPost() {
     </div>
   );
 }
-const posts = [
-  {
-    title: "CHDV Mới Khai Trương Nội Thất Mới 100% Qua Q1 chỉ 3 phút đi bộ",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/sp_1745158968.jpg",
-    price: "6 triệu/tháng",
-    time: "38 phút trước",
-    link: "/chdv-moi-khai-truong-noi-that-moi-100-qua-q1-chi-3-phut-di-bo-pr679876.html",
-  },
-  {
-    title: "(Thủ Đức) - CẦN CHO THUÊ GẤP TẦNG TRỆT LÀM VĂN PHÒNG",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/vp5_1745157031.jpg",
-    price: "17 triệu/tháng",
-    time: "1 giờ trước",
-    link: "/thu-duc-can-cho-thue-gap-tang-tret-lam-van-phong-pr679874.html",
-  },
-];

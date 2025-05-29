@@ -9,9 +9,10 @@ import { SlCalender } from "react-icons/sl";
 import { AuthContext } from "../../context/AuthContext";
 import { userApi } from "../../api/user";
 import { MdOutlineShowChart } from "react-icons/md";
+import { TbMessageReport } from "react-icons/tb";
 
 export const SidebarAdmin = () => {
-  const { userId } = useContext(AuthContext);
+  const { userId, logout } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState();
 
@@ -119,6 +120,24 @@ export const SidebarAdmin = () => {
               <span>Duyệt tin đăng </span>
             </a>
           </li>
+          <li>
+            <a
+              href="/admin/duyet-tai-khoan"
+              className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
+            >
+              <BsWindowPlus size={20} />
+              <span>Duyệt tài khoản </span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/admin/duyet-bao-xau"
+              className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
+            >
+              <TbMessageReport size={20} />
+              <span>Báo xấu </span>
+            </a>
+          </li>
           {/* <li>
             <a
               href="/admin"
@@ -156,13 +175,16 @@ export const SidebarAdmin = () => {
             </a>
           </li>
           <li>
-            <a
-              href="/thoat"
+            <div
+              onClick={() => {
+                logout();
+              }}
+              href="/"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <IoIosLogOut size={20} />
               <span>Đăng xuất</span>
-            </a>
+            </div>
           </li>
         </ul>
 

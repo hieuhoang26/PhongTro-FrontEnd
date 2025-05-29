@@ -12,7 +12,7 @@ import { paymentApi } from "../../api/payment";
 import { formatNumber, formatPrice } from "../../utils/other";
 
 export const SidebarUser = () => {
-  const { userId } = useContext(AuthContext);
+  const { userId, logout } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState();
   const [balance, setBalance] = useState(0);
@@ -145,13 +145,16 @@ export const SidebarUser = () => {
             </a>
           </li>
           <li>
-            <a
-              href="/thoat"
+            <div
+              onClick={() => {
+                logout();
+              }}
+              href="/"
               className="flex items-center gap-2 text-gray-600 px-2 py-2 rounded hover:bg-gray-100 hover:text-gray-800"
             >
               <IoIosLogOut size={20} />
               <span>Đăng xuất</span>
-            </a>
+            </div>
           </li>
         </ul>
 

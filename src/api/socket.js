@@ -15,8 +15,10 @@ export const chatApi = {
     return http.get(`/chat/conversation?userA=${userA}&userB=${userB}`);
   },
 
-  fetchMessages(conversationId) {
-    return http.get(`/chat/messages?conversationId=${conversationId}`);
+  fetchMessages(conversationId, userId) {
+    return http.get(
+      `/chat/messages?conversationId=${conversationId}&userId=${userId}`
+    );
   },
   searchUsers(search) {
     return http.get(`/chat/search?phoneOrName=${search}`);

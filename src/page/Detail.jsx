@@ -9,7 +9,7 @@ import { PostCard } from "../components/Item/PostCard";
 import { PostCardV3 } from "../components/Item/PostCardV3";
 import { Pagination } from "../components/Pagination";
 import { GoDotFill, GoShareAndroid } from "react-icons/go";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiHeart, BiSolidCheckCircle, BiSolidHeart } from "react-icons/bi";
 import { IoWarningOutline } from "react-icons/io5";
 import MediaSlider from "../components/MediaSlider";
@@ -26,19 +26,36 @@ import RelatedPost from "../components/RelatedPost";
 import { FaPhoneAlt, FaStar } from "react-icons/fa";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { MapDetail } from "../components/Map/MapDetail";
+import { ReportModal } from "../components/Report/ReportModal";
+import { AuthContext } from "../context/AuthContext";
+import { favorApi } from "../api/favor";
+import { toast } from "react-toastify";
 
 export default function Detail() {
   const { id } = useParams();
+  const { userId, role } = useContext(AuthContext);
 
   const [detail, setDetail] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const [showReport, setShowReport] = useState(false);
+  const [liked, setLiked] = useState(false);
+
+  const handleOpenReport = () => {
+    if (role && role !== "ROLE_ADMIN") {
+      setShowReport(true);
+    } else {
+      toast.warn("Không có quyền thực hiện báo cáo!");
+    }
+  };
+  const handleCloseReport = () => setShowReport(false);
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
         const response = await postApi.detail(id);
         setDetail(response.data.data);
-        console.log(response.data.data);
+        console.log("Detail response:", response.data.data);
         setLoading(false);
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
@@ -48,17 +65,47 @@ export default function Detail() {
     fetchDetail();
   }, [id]);
 
-  const [liked, setLiked] = useState(false);
+  useEffect(() => {
+    const isLiked = async () => {
+      if (!userId || !detail.id) return;
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    // Gọi API lưu tin hoặc bỏ lưu tại đây nếu cần
+      try {
+        const response = await favorApi.isLiked(
+          Number(detail.id),
+          Number(userId)
+        );
+        // console.log("isLiked response:", response.data);
+        setLiked(response.data || false);
+      } catch (error) {
+        console.error("Error checking like status:", error);
+      }
+    };
+
+    isLiked();
+  }, [detail.id, userId]); // Chỉ gọi khi cả 2 đã có giá trị
+
+  const toggleLike = async () => {
+    if (!userId) {
+      console.log("Please login to like posts");
+      return;
+    }
+
+    try {
+      if (liked) {
+        await favorApi.unLikePost(detail.id, userId);
+      } else {
+        await favorApi.likePost(detail.id, userId);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   if (loading) {
     return <div className="text-center p-8">Đang tải dữ liệu...</div>;
   }
-  console.log(detail);
+  // console.log(detail);
 
   return (
     <div className="flex justify-center mt-6">
@@ -322,7 +369,7 @@ export default function Detail() {
                   />
                   <div className="mt-3 text-center">
                     <span className="text-lg font-medium">
-                      {detail.username}
+                      {detail.nameContact}
                     </span>
                     <div className="flex justify-center text-xs">
                       <GoDotFill className="mt-1 mr-1" />
@@ -336,9 +383,9 @@ export default function Detail() {
                 </div>
                 <div className="flex flex-col items-center ">
                   <div className="space-y-2 w-full">
-                    <button className="flex items-center justify-center gap-2 bg-green-500 text-black px-4 py-2 rounded-lg border border-gray-300 shadow-sm hover:bg-gray-50 font-medium w-full">
+                    <button className="flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg border border-gray-300 shadow-sm hover:bg-gray-50 font-medium w-full">
                       <FaPhoneAlt className="text-base" />
-                      <span>{detail.phone}</span>
+                      <span>{detail.phoneContact}</span>
                     </button>
 
                     <button className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 font-medium w-full">
@@ -367,7 +414,10 @@ export default function Detail() {
                     <span>Chia sẻ</span>
                   </button>
 
-                  <button className="whitespace-nowrap flex items-center justify-center">
+                  <button
+                    className="whitespace-nowrap flex items-center justify-center"
+                    onClick={handleOpenReport}
+                  >
                     <IoWarningOutline size={20} className="mr-1" />
                     <span>Báo xấu</span>
                   </button>
@@ -391,6 +441,11 @@ export default function Detail() {
           <RelatedPost />
         </div>
       </div>
+      <ReportModal
+        show={showReport}
+        onClose={handleCloseReport}
+        postId={detail.id}
+      />
     </div>
   );
 }

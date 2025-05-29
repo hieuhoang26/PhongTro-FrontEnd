@@ -16,22 +16,47 @@ const CreatePost = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
-  const { userId, isVerify } = useContext(AuthContext);
+  const { userId, isVerify, role } = useContext(AuthContext);
+  console.log("isVerify:", role);
+
   const [totalAmount, setTotalAmount] = useState(0);
   const [payMethod, setPayMethod] = useState(0);
 
   const infoSchema = yup.object().shape({
-    typeId: yup.number().required("Loại chuyên mục là bắt buộc"),
-    city: yup.number().required("Tỉnh/Thành phố là bắt buộc"),
-    district: yup.number().required("Quận/Huyện là bắt buộc"),
+    typeId: yup
+      .number()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === "" ? undefined : value
+      )
+      .required("Loại chuyên mục là bắt buộc"),
+    city: yup
+      .number()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === "" ? undefined : value
+      )
+      .required("Tỉnh/Thành phố là bắt buộc"),
+    district: yup
+      .number()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === "" ? undefined : value
+      )
+      .required("Quận/Huyện là bắt buộc"),
     ward: yup.number().nullable(),
     street: yup.string().nullable(),
     streetNumber: yup.string().nullable(),
     title: yup.string().required("Tiêu đề là bắt buộc"),
     description: yup.string().required("Mô tả là bắt buộc"),
-    price: yup.number().required("Giá là bắt buộc"),
+    price: yup
+      .number()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === "" ? undefined : value
+      )
+      .required("Giá là bắt buộc"),
     area: yup
       .number()
+      .transform((value, originalValue) =>
+        String(originalValue).trim() === "" ? undefined : value
+      )
       .required("Diện tích là bắt buộc")
       .positive("Diện tích phải là số dương"),
     categories: yup.array().min(1, "Chọn ít nhất 1 danh mục"),
@@ -57,26 +82,26 @@ const CreatePost = () => {
     resolver: yupResolver(infoSchema),
     defaultValues: {
       userId: userId,
-      title: "",
-      description: "",
-      price: "",
-      area: "",
-      fullAddress: "",
-      typeId: "",
-      isVip: "",
-      vipExpiryDate: "",
-      status: "",
+      title: null,
+      description: null,
+      price: null,
+      area: null,
+      fullAddress: null,
+      typeId: null,
+      isVip: null,
+      vipExpiryDate: null,
+      status: null,
       images: [],
       videoFiles: [],
-      videoLink: "",
-      city: "",
-      district: "",
-      ward: "",
-      street: "",
-      streetNumber: "",
+      videoLink: null,
+      city: null,
+      district: null,
+      ward: null,
+      street: null,
+      streetNumber: null,
       categories: [],
-      username: "",
-      phone: "",
+      username: null,
+      phone: null,
       latitude: null,
       longitude: null,
     },
@@ -107,11 +132,14 @@ const CreatePost = () => {
         .slice(0, 19);
       formDataToSend.append("vipExpiryDate", formattedVipDate);
     }
-
-    if (payMethod == 0 || payMethod == null) {
-      formDataToSend.append("status", "PENDING");
+    if (role === "ROLE_ADMIN") {
+      formDataToSend.append("status", "APPROVED");
     } else {
-      formDataToSend.append("status", "PAYING");
+      if (payMethod == 0 || payMethod == null) {
+        formDataToSend.append("status", "PENDING");
+      } else {
+        formDataToSend.append("status", "PAYING");
+      }
     }
 
     formDataToSend.append("wardId", Number(data.ward));
@@ -119,6 +147,8 @@ const CreatePost = () => {
     formDataToSend.append("videoLink", data.videoLink || "");
     formDataToSend.append("latitude", data.latitude ?? "");
     formDataToSend.append("longitude", data.longitude ?? "");
+    formDataToSend.append("nameContact", data.username ?? "");
+    formDataToSend.append("phoneContact", data.phone ?? "");
 
     if (data.images && data.images.length > 0) {
       data.images.forEach((file) => {
@@ -136,7 +166,7 @@ const CreatePost = () => {
       });
     }
 
-    if (data.isVip != "6" && !payMethod) {
+    if (data.isVip != "6" && !payMethod && role !== "ROLE_ADMIN") {
       toast.error("Vui lòng chọn phương thức thanh toán!");
       return;
     }
@@ -148,52 +178,54 @@ const CreatePost = () => {
         const postId = postResponse.data.data;
         console.log("Post created:", postId);
 
-        // Handle payment based on selected method
-        //     if (payMethod === 0 || payMethod == null) {
-        //       toast.success("Chờ duyệt bài đăng");
-        //       setTimeout(() => {
-        //         navigate("/admin");
-        //       }, 3000);
-        //     } else if (payMethod === 1) {
-        //       // Pay with wallet
-        //       const walletData = {
-        //         amount: Number(totalAmount),
-        //         userId: data.userId,
-        //         postId: postId,
-        //       };
+        if (role !== "ROLE_ADMIN") {
+          // Handle payment based on selected method
+          if (payMethod === 0 || payMethod == null) {
+            toast.success("Chờ duyệt bài đăng");
+            setTimeout(() => {
+              navigate("/admin");
+            }, 3000);
+          } else if (payMethod === 1) {
+            // Pay with wallet
+            const walletData = {
+              amount: Number(totalAmount),
+              userId: data.userId,
+              postId: postId,
+            };
 
-        //       const walletResponse = await paymentApi.payWithWallet(walletData);
+            const walletResponse = await paymentApi.payWithWallet(walletData);
 
-        //       if (walletResponse.data.status === 200) {
-        //         toast.success("Thanh toán bằng ví thành công!");
-        //         setTimeout(() => {
-        //           navigate("/admin");
-        //         }, 1500);
-        //       } else {
-        //         toast.error(
-        //           walletResponse.data.message || "Thanh toán ví thất bại!"
-        //         );
-        //       }
-        //     } else if (payMethod === 2) {
-        //       // Pay with VNPay
-        //       const paymentResponse = await paymentApi.createVnPayPayment(
-        //         totalAmount,
-        //         "PAYMENT",
-        //         data.userId,
-        //         postId
-        //       );
+            if (walletResponse.data.status === 200) {
+              toast.success("Thanh toán bằng ví thành công!");
+              setTimeout(() => {
+                navigate("/admin");
+              }, 1500);
+            } else {
+              toast.error(
+                walletResponse.data.message || "Thanh toán ví thất bại!"
+              );
+            }
+          } else if (payMethod === 2) {
+            // Pay with VNPay
+            const paymentResponse = await paymentApi.createVnPayPayment(
+              totalAmount,
+              "PAYMENT",
+              data.userId,
+              postId
+            );
 
-        //       const { paymentUrl } = paymentResponse.data;
-        //       if (paymentUrl) {
-        //         window.location.href = paymentUrl;
-        //       } else {
-        //         toast.error("Không lấy được link thanh toán VNPay!");
-        //       }
-        //     } else {
-        //       toast.error("Vui lòng chọn phương thức thanh toán hợp lệ.");
-        //     }
-        //   } else {
-        //     toast.error(postResponse.data.message || "Tạo bài đăng thất bại!");
+            const { paymentUrl } = paymentResponse.data;
+            if (paymentUrl) {
+              window.location.href = paymentUrl;
+            } else {
+              toast.error("Không lấy được link thanh toán VNPay!");
+            }
+          } else {
+            toast.error("Vui lòng chọn phương thức thanh toán hợp lệ.");
+          }
+        }
+      } else {
+        toast.error(postResponse.data.message || "Tạo bài đăng thất bại!");
       }
     } catch (error) {
       // Handle error
@@ -226,34 +258,34 @@ const CreatePost = () => {
 
   return (
     <div>
-      {isVerify == false ? (
+      {/* {isVerify == false ? (
         <>chưa xác thực tài khoản</>
-      ) : (
-        <>
-          {step === 1 ? (
-            <InfoPost
-              handleNext={handleNext}
-              isVerify={isVerify}
-              //
-              register={register}
-              control={control}
-              errors={errors}
-              setValue={setValue}
-              watch={watch}
-            />
-          ) : (
-            <PayPost
-              setStep={setStep}
-              setValue={setValue}
-              setTotalAmount={setTotalAmount}
-              totalAmount={totalAmount}
-              setPayMethod={setPayMethod}
-              payMethod={payMethod}
-              handleSubmit={handleSubmit(onSubmit)}
-            />
-          )}
-        </>
-      )}
+      ) : ( */}
+      <>
+        {step === 1 ? (
+          <InfoPost
+            handleNext={handleNext}
+            isVerify={isVerify}
+            //
+            register={register}
+            control={control}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+          />
+        ) : (
+          <PayPost
+            setStep={setStep}
+            setValue={setValue}
+            setTotalAmount={setTotalAmount}
+            totalAmount={totalAmount}
+            setPayMethod={setPayMethod}
+            payMethod={payMethod}
+            handleSubmit={handleSubmit(onSubmit)}
+          />
+        )}
+      </>
+      {/* )} */}
     </div>
   );
 };

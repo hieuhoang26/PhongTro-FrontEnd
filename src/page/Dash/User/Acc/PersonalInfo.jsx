@@ -3,10 +3,10 @@ import { useState } from "react";
 export const PersonalInfo = () => {
   const [formData, setFormData] = useState({
     user_avatar: "",
-    phone: "0941008560",
-    name: "Dung dang",
-    email: "_",
-    user_id: "150902",
+    phone: "123456789",
+    name: "john_doe",
+    email: "test@gmail.com",
+    user_id: "1",
   });
 
   const [showInvoiceInfo, setShowInvoiceInfo] = useState(false);
@@ -115,7 +115,7 @@ export const PersonalInfo = () => {
         </div>
 
         {/* Password (read-only) */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <label className="block text-sm font-medium mb-1">Mật khẩu</label>
           <input
             type="password"
@@ -123,7 +123,7 @@ export const PersonalInfo = () => {
             readOnly
             className="w-full px-4 py-2 border border-gray-200 rounded-md bg-gray-100 cursor-not-allowed"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Submit */}

@@ -48,16 +48,19 @@ export const amenitiesList = [
 ];
 export const cityHomePage = [
   {
+    id: 1,
     src: "https://phongtro123.com/images/location_hcm.jpg",
     alt: "Phòng trọ Hồ Chí Minh",
     label: " Hồ Chí Minh",
   },
   {
+    id: 2,
     src: "https://phongtro123.com/images/location_hn.jpg",
     alt: "Phòng trọ Hà Nội",
     label: "Hà Nội",
   },
   {
+    id: 3,
     src: "https://phongtro123.com/images/location_dn.jpg",
     alt: "Phòng trọ Đà nẵng",
     label: "Đà Nẵng",

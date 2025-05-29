@@ -32,6 +32,15 @@ export const PostCardV2 = ({ post }) => {
       console.error("Error toggling like:", error);
     }
   };
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
+  const getImage = (displayIndex) => {
+    // Lọc ra các URL là ảnh
+    const imageUrls = post.images?.filter((url) => isImageUrl(url)) || [];
+    return imageUrls[displayIndex] || "/placeholder-image.jpg";
+  };
   return (
     <li className="bg-white shadow-sm rounded p-4 mb-3 grid sm:flex gap-3">
       <div className="sm:w-2/5 relative">
@@ -41,7 +50,7 @@ export const PostCardV2 = ({ post }) => {
             {/* Ảnh lớn bên trái */}
             <div className="w-2/3 h-full relative">
               <img
-                src={post?.images[0]}
+                src={getImage(0)}
                 alt="Main"
                 className="absolute w-full h-full object-cover"
                 loading="lazy"
@@ -56,7 +65,7 @@ export const PostCardV2 = ({ post }) => {
             <div className="w-1/3 flex flex-col">
               <div className="h-1/2 relative border-l border-white">
                 <img
-                  src={post.images[1]}
+                  src={getImage(1)}
                   alt="Sub1"
                   className="absolute w-full h-full object-cover"
                   loading="lazy"
@@ -68,7 +77,7 @@ export const PostCardV2 = ({ post }) => {
               </div>
               <div className="h-1/2 relative border-l border-t border-white">
                 <img
-                  src={post.images[2]}
+                  src={getImage(2)}
                   alt="Sub2"
                   className="absolute w-full h-full object-cover"
                   loading="lazy"
@@ -104,12 +113,21 @@ export const PostCardV2 = ({ post }) => {
                 : ""
             }`}
           >
-            <span className="inline-flex mr-1">
-              {[...Array(post.isVip)].map((_, i) => (
-                <FaStar key={i} className="text-yellow-300" size={14} />
-              ))}
+            <span
+              className="text-ellipsis overflow-hidden"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              <span className="inline-flex mr-1">
+                {[...Array(post.isVip)].map((_, i) => (
+                  <FaStar key={i} className="text-yellow-300" size={14} />
+                ))}
+              </span>
+              {post.title}
             </span>
-            {post.title}
           </a>
         </h3>
 

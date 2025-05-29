@@ -1,23 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { postApi } from "../../api/post";
+import { formatPrice, formatTimeAgo } from "../../utils/other";
 
-const PostItemNav = ({ image, title, price, time, link }) => {
+const PostItemNav = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchLatestPosts = async () => {
+      try {
+        const res = await postApi.getLatest();
+        if (res.status === 200) {
+          setPosts(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching latest posts:", error);
+      }
+    };
+
+    fetchLatestPosts();
+  }, []);
+
   return (
-    <li className="border-t pt-4 mt-4 border-gray-300 first:mt-0 first:pt-0 first:border-t-0">
-      <a href={link} className="flex" title={title}>
-        <figure className="flex-shrink-0 w-[100px] h-[80px] overflow-hidden rounded">
-          <img src={image} alt={title} className="w-full h-full object-cover" />
-        </figure>
-        <div className="flex-grow pl-3">
-          <p className="mb-2 text-[#055699] text-sm font-medium line-clamp-2">
-            {title}
-          </p>
-          <div className="flex justify-between text-sm">
-            <span className="font-semibold text-[#f60]">{price}</span>
-            <time className="text-gray-500 text-xs">{time}</time>
-          </div>
-        </div>
-      </a>
-    </li>
+    <ul className="space-y-4">
+      {posts.map((post) => (
+        <li
+          key={post.id}
+          className="group transition-shadow duration-300 rounded-xl hover:shadow-md bg-white p-2 border border-gray-200"
+        >
+          <a
+            href={`/detail/${post.id}`}
+            className="flex gap-3 items-start"
+            title={post.title}
+          >
+            <figure className="flex-shrink-0 w-[100px] h-[80px] rounded overflow-hidden border border-gray-200">
+              <img
+                src={post.images?.[1] || "/default.jpg"}
+                alt={post.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </figure>
+
+            <div className="flex-grow">
+              <p className="mb-2 text-[#055699] text-sm font-semibold leading-snug line-clamp-2 capitalize">
+                {post.title}
+              </p>
+
+              <div className=" text-xs flex flex-col">
+                <span className="text-[#f60] font-bold">
+                  {formatPrice(post.price)}
+                </span>
+                <time className="text-gray-500">
+                  {formatTimeAgo(post?.createdAt)}
+                </time>
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 };
 

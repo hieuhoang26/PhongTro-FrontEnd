@@ -7,48 +7,55 @@ import { AuthContext } from "../../../context/AuthContext";
 import { PostModal } from "../../../components/Admin/Modal/PostModal";
 import { toast } from "react-toastify";
 import { VipModal } from "../../../components/Admin/Modal/VipModal";
+import { useInView } from "react-intersection-observer";
 
 export const PostListUser = () => {
   const [posts, setPosts] = useState([]);
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenUp, setIsOpenUp] = useState(false);
-
   const [postId, setPostId] = useState(null);
-
   const { userId } = useContext(AuthContext);
 
-  // Fetch data
-  const fetchPosts = async (currentPage = 0) => {
+  const { ref, inView } = useInView({ threshold: 1 });
+
+  const fetchPosts = async (currentPage = 0, isLoadMore = false) => {
     try {
       const response = await postApi.getPostsByStatus(
         userId,
         status,
         currentPage,
-        3,
+        5,
         "desc"
       );
-      setPosts(response.data.items);
-      setTotalPages(response.data.total);
-      setPage(Number(response.data.page));
+      if (isLoadMore) {
+        setPosts((prev) => [...prev, ...response.data.items]);
+      } else {
+        setPosts(response.data.items);
+      }
+
+      setPage(response.data.page);
+      setHasMore(response.data.items.length > 0);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
+
   useEffect(() => {
     if (userId) {
-      fetchPosts(page);
+      fetchPosts(0);
     }
-  }, [userId, status, page]);
+  }, [userId, status]);
 
-  const handlePageClick = (data) => {
-    const selectedPage = data.selected;
-    fetchPosts(selectedPage);
-  };
+  useEffect(() => {
+    if (inView && hasMore) {
+      fetchPosts(page + 1, true);
+    }
+  }, [inView]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -59,9 +66,7 @@ export const PostListUser = () => {
     if (confirm("Bạn có chắc chắn muốn xoá bài đăng này không?")) {
       try {
         // await postApi.delete(id);
-        // Sau khi xoá thành công thì làm gì tiếp?
-        // Ví dụ: load lại danh sách posts, hoặc filter posts trong local luôn
-        fetchPosts(page);
+        fetchPosts(0);
         toast.success("Đã xoá bài đăng thành công!");
       } catch (error) {
         console.error(error);
@@ -71,18 +76,13 @@ export const PostListUser = () => {
   };
 
   return (
-    <div className="relative ">
+    <div className="relative">
       <div className="sticky top-[45px] bg-white shadow-sm py-4 px-5 z-10">
-        <div className="flex">
-          <h1 className="text-2xl font-semibold whitespace-nowrap mb-1">
-            Danh sách bài đăng
-          </h1>
-        </div>
+        <h1 className="text-2xl font-semibold mb-1">Danh sách bài đăng</h1>
       </div>
 
       <div className="m-5">
         <form onSubmit={handleSubmit} className="flex items-center mb-3 gap-3">
-          {/* Dropdown lọc trạng thái */}
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -96,19 +96,17 @@ export const PostListUser = () => {
             <option value="PAYING">PAYING</option>
           </select>
 
-          {/* Input tìm kiếm (tạm thời chưa dùng backend) */}
           <div className="relative">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="form-control text-base w-[250px] pr-10 p-2 border border-gray-200 rounded-lg focus:outline-none h-10"
-              id="searchInput"
               type="text"
               placeholder="Tìm theo mã tin hoặc tiêu đề"
             />
             <button
               type="submit"
-              className="absolute top-0 right-0 w-10 h-full flex items-center justify-center border-0 bg-transparent p-0"
+              className="absolute top-0 right-0 w-10 h-full flex items-center justify-center border-0 bg-transparent"
             >
               <IoIosSearch size={20} className="text-gray-500" />
             </button>
@@ -116,24 +114,21 @@ export const PostListUser = () => {
         </form>
       </div>
 
-      {/* Danh sách bài đăng */}
-      {posts.length == 0 ? (
-        <>
-          <div className="p-5 text-center flex flex-col items-center justify-center">
-            <img
-              src="https://phongtro123.com/images/file-searching-rafiki-gray.svg"
-              alt="No posts in this area"
-              className="max-w-[200px] max-h-[200px]"
-            />
-            <p className="mt-2 text-red-600">Tìm thấy 0 tin đăng</p>
-          </div>
-        </>
+      {posts.length === 0 ? (
+        <div className="p-5 text-center flex flex-col items-center justify-center">
+          <img
+            src="https://phongtro123.com/images/file-searching-rafiki-gray.svg"
+            alt="No posts"
+            className="max-w-[200px] max-h-[200px]"
+          />
+          <p className="mt-2 text-red-600">Tìm thấy 0 tin đăng</p>
+        </div>
       ) : (
-        <>
-          <div className="flex justify-center">
-            <div className="w-full mt-6 overflow-auto max-w-screen-2xl mx-auto px-4">
-              <table className="w-full bg-white shadow-lg rounded-2xl overflow-hidden">
-                <thead className="bg-gray-100">
+        <div className="flex justify-center">
+          <div className="w-full mt-6 max-w-screen-2xl mx-auto px-4">
+            <div className="max-h-[600px] overflow-y-auto border border-gray-200 rounded-lg">
+              <table className="min-w-full border-separate border-spacing-0">
+                <thead className="sticky top-0 bg-gray-100 z-10">
                   <tr>
                     {[
                       "Tiêu đề",
@@ -163,13 +158,12 @@ export const PostListUser = () => {
                           : "border-b border-gray-200"
                       }`}
                     >
-                      {/* <td className="p-4 text-gray-700">{post.id}</td> */}
                       <td className="p-4 flex items-center gap-3">
                         {post.images.length > 0 && (
                           <img
                             src={post.images[0]}
                             alt={post.title}
-                            className="w-12 h-12 object-cover p-1  rounded-md"
+                            className="w-12 h-12 object-cover p-1 rounded-md"
                           />
                         )}
                         <p className="text-gray-900 font-medium">
@@ -188,7 +182,7 @@ export const PostListUser = () => {
                       <td className="p-4 text-center">
                         <div className="flex justify-center items-center gap-2">
                           <button
-                            className="p-2 rounded-full hover:bg-gray-200 transition"
+                            className="p-2 rounded-full hover:bg-gray-200"
                             onClick={() => {
                               setPostId(post.id);
                               setIsOpenUp(true);
@@ -197,7 +191,7 @@ export const PostListUser = () => {
                             <MdUpdate className="text-blue-600" />
                           </button>
                           <button
-                            className="p-2 rounded-full hover:bg-gray-200 transition"
+                            className="p-2 rounded-full hover:bg-gray-200"
                             onClick={() => {
                               setPostId(post.id);
                               setIsOpen(true);
@@ -206,7 +200,7 @@ export const PostListUser = () => {
                             <MdEdit className="text-blue-600" />
                           </button>
                           <button
-                            className="p-2 rounded-full hover:bg-red-200 transition text-red-600"
+                            className="p-2 rounded-full hover:bg-red-200 text-red-600"
                             onClick={() => handleDeletePost(post.id)}
                           >
                             <MdDelete />
@@ -218,48 +212,13 @@ export const PostListUser = () => {
                 </tbody>
               </table>
 
-              {/* Pagination */}
-              <div className="flex justify-center my-8">
-                <ReactPaginate
-                  // Nút quay lại trang trước (hiển thị biểu tượng và chữ "Trước")
-                  previousLabel={"← Trước"}
-                  // Nút đi tới trang tiếp theo
-                  nextLabel={"Sau →"}
-                  // Dấu "..." xuất hiện khi có nhiều trang bị ẩn đi
-                  //   breakLabel={"..."}
-                  // Tổng số trang – được lấy từ API (đã là tổng số trang thật sự, không cần tính)
-                  pageCount={totalPages}
-                  // Số trang sẽ hiển thị ở đầu và cuối pagination (ví dụ: 1 2 ... 9 10)
-                  marginPagesDisplayed={0}
-                  // Số trang hiển thị ở khu vực giữa (ví dụ: ... 4 5 6 ...)
-                  pageRangeDisplayed={2}
-                  // Hàm được gọi khi người dùng chọn một trang mới
-                  onPageChange={handlePageClick}
-                  // Class cho container của pagination (flex để các nút nằm ngang)
-                  containerClassName={"flex items-center space-x-2"}
-                  // Class cho mỗi nút số trang
-                  pageClassName={
-                    "px-3 py-1 border rounded-md hover:bg-gray-200"
-                  }
-                  // Class cho nút của trang đang được chọn
-                  activeClassName={"bg-blue-500 text-white"}
-                  // Class cho nút "Trước"
-                  previousClassName={
-                    "px-3 py-1 border rounded-md hover:bg-gray-200"
-                  }
-                  // Class cho nút "Sau"
-                  nextClassName={
-                    "px-3 py-1 border rounded-md hover:bg-gray-200"
-                  }
-                  // Class cho dấu "..."
-                  breakClassName={"px-3 py-1"}
-                  // Buộc ReactPaginate luôn highlight đúng trang hiện tại (tránh bị mất sync)
-                  forcePage={page}
-                />
+              {/* Trigger to load more when in view */}
+              <div ref={ref} className="py-5 text-center text-gray-500">
+                {hasMore ? "Đang tải thêm bài viết..." : "Đã tải hết bài viết."}
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       <PostModal

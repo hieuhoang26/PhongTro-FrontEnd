@@ -84,8 +84,6 @@ export const VipModal = ({ postId, isOpen, setIsOpen }) => {
     setIsVip(Number(getVipIdFromValue(selectedPackage)));
   }, [selectedPackage, packageType, totalDay, totalWeek, totalMonth]);
 
-  console.log("isVip", isVip);
-
   useEffect(() => {
     if (selectedPackage === "6") {
       handlePayOptionChange(0);

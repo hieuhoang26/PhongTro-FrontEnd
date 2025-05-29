@@ -60,6 +60,9 @@ export const postApi = {
       },
     });
   },
+  getLatest() {
+    return http.get("post/latest");
+  },
 };
 // postApi.filter({
 //     typeId: 1,

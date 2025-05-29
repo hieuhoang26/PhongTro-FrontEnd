@@ -8,6 +8,8 @@ import {
   getAccessTokenFromSession,
   getProfileFromSession,
 } from "../../utils/storage";
+import { FiArrowLeft } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 export const ChatApp = () => {
   const { userId } = useContext(AuthContext);
@@ -97,7 +99,7 @@ export const ChatApp = () => {
         const conversationId = res.data.id;
 
         // Lấy tin nhắn
-        const msgRes = await chatApi.fetchMessages(conversationId);
+        const msgRes = await chatApi.fetchMessages(conversationId, userId);
 
         // console.log("mess", msgRes.data);
         setMessages(
@@ -178,15 +180,6 @@ export const ChatApp = () => {
         setSearchResults([]);
         setShowSearchResults(true);
       } else {
-        // Kiểm tra user đã có trong danh bạ chưa
-        // const isExistingContact = contacts.some(
-        //   (contact) =>
-        //     contact.user1?.id === user.id || contact.user2?.id === user.id
-        // );
-        // if (isExistingContact) {
-        //   setSearchResults([]);
-        //   setShowSearchResults(true);
-        // } else {
         // Chuyển thành array để phù hợp với cách render hiện tại
         setSearchResults([user]);
         setShowSearchResults(true);
@@ -233,21 +226,22 @@ export const ChatApp = () => {
       handleSendMessage();
     }
   };
-
-  // const handleSearchKeyPress = (e) => {
-  //   if (e.key === "Enter") {
-  //     e.preventDefault();
-  //     handleSearch();
-  //   }
-  // };
-
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <div className="w-1/4 bg-white border-r border-gray-300">
         {/* Sidebar Header */}
         <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-indigo-600 text-white">
-          <h1 className="text-2xl font-semibold">Chat App</h1>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/"
+              className=" hover:bg-indigo-500 rounded-full transition"
+            >
+              <FiArrowLeft size={24} />
+            </Link>
+            <h1 className="text-2xl font-semibold">Tin nhắn</h1>
+          </div>
+
           <div className="flex items-center">
             <span
               className={`h-3 w-3 rounded-full mr-2 ${
@@ -369,12 +363,6 @@ export const ChatApp = () => {
               >
                 <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                   <img
-                    // src={
-                    //   displayUser.avatarUrl ||
-                    //   `https://placehold.co/200x/cccccc/ffffff.svg?text=${displayUser.name.charAt(
-                    //     0
-                    //   )}&font=Lato`
-                    // }
                     src={`https://placehold.co/200x/${contact.color}/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato`}
                     alt="User Avatar"
                     className="w-12 h-12 rounded-full"
@@ -400,7 +388,7 @@ export const ChatApp = () => {
         {/* Chat Header */}
         <header className="bg-white p-4 text-gray-700 border-b border-gray-300">
           <h1 className="text-2xl font-semibold">
-            {currentChat ? currentChat.name : "Select a chat"}
+            {currentChat ? currentChat.name : "Chọn một cuộc trò chuyện"}
           </h1>
         </header>
 
@@ -455,14 +443,14 @@ export const ChatApp = () => {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <p className="text-gray-500">
-                  No messages yet. Start the conversation!
+                  Không có tin nhắn nào trong cuộc trò chuyện này
                 </p>
               </div>
             )
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-500">
-                Select a contact to start chatting
+                Chọn một cuộc trò chuyện để bắt đầu
               </p>
             </div>
           )}
@@ -489,7 +477,7 @@ export const ChatApp = () => {
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                {isConnected ? "Send" : "Connecting..."}
+                {isConnected ? "Gửi" : "Đang kết nối..."}
               </button>
             </div>
           </footer>
