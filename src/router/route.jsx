@@ -33,6 +33,8 @@ import { VerifyManager } from "../page/Dash/Admin/Acc/VerifyManager";
 import { ReportManager } from "../page/Dash/Admin/ReportManager";
 import { BlogList } from "../page/BlogList";
 import BlogDetail from "../page/BlogDetail";
+import { ForgotPassStep1 } from "../page/ForgotPassStep1";
+import { ForgotPassStep2 } from "../page/ForgotPassStep2";
 
 export const router = createBrowserRouter([
   {
@@ -86,7 +88,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/quen-mat-khau",
-        element: <ForgotPass />,
+        element: <ForgotPassStep1 />,
+      },
+      {
+        path: "/cap-lai-mat-khau",
+        element: <ForgotPassStep2 />,
       },
       {
         path: "/bang-gia",

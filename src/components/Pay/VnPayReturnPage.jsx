@@ -23,7 +23,7 @@ const VnPayReturnPage = () => {
         );
 
         const data = response.data;
-        console.log(data);
+        // console.log(data);
 
         if (data) {
           setMessage(
@@ -33,12 +33,18 @@ const VnPayReturnPage = () => {
           // Thêm độ trễ 3 giây trước khi chuyển hướng
           const timer = setTimeout(() => {
             window.close();
-          }, 3000);
+          }, 1500);
 
           // Cleanup function để tránh memory leak
           return () => clearTimeout(timer);
         } else {
           setMessage("Thanh toán thất bại hoặc bị hủy.");
+          const timer = setTimeout(() => {
+            window.close();
+          }, 1500);
+
+          // Cleanup function để tránh memory leak
+          return () => clearTimeout(timer);
         }
       } catch (error) {
         console.error("Lỗi khi xử lý VNPay return:", error);

@@ -197,9 +197,11 @@ const CreatePost = () => {
 
             if (walletResponse.data.status === 200) {
               toast.success("Thanh toán bằng ví thành công!");
-              setTimeout(() => {
+              const timer = setTimeout(() => {
                 navigate("/admin");
-              }, 1500);
+              }, 1000);
+
+              return () => clearTimeout(timer);
             } else {
               toast.error(
                 walletResponse.data.message || "Thanh toán ví thất bại!"

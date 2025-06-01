@@ -148,9 +148,9 @@ const Login = () => {
             </a>{" "}
             của chúng tôi
           </p>
-          <p className="text-xs mt-2">
+          {/* <p className="text-xs mt-2">
             Bản quyền © 2015 - 2025 Phongtro123.com
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

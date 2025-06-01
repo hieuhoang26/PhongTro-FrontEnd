@@ -23,4 +23,7 @@ export const chatApi = {
   searchUsers(search) {
     return http.get(`/chat/search?phoneOrName=${search}`);
   },
+  isUnread(userId) {
+    return http.get(`/chat/unread?userId=${userId}`);
+  },
 };

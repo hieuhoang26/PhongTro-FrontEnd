@@ -10,12 +10,7 @@ export const verifyApi = {
     });
   },
   changeStatus(id, status) {
-    return http.patch("verify", {
-      params: {
-        id,
-        status,
-      },
-    });
+    return http.patch(`verify?id=${id}&status=${status}`);
   },
   getList(status, page, size) {
     return http.get("verify/list", {

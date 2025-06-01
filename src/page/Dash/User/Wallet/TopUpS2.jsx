@@ -59,7 +59,8 @@ export const TopUpS2 = ({ setStep, payMethod }) => {
         console.log(res.data?.paymentUrl);
         // Redirect to VNPay link nếu backend trả URL
         if (res.data?.paymentUrl) {
-          window.location.href = res.data.paymentUrl;
+          // window.location.href = res.data.paymentUrl;
+          window.open(res.data.paymentUrl, "_blank");
         }
       } else if (payMethod === 2) {
         // Gọi API chuyển khoản nếu có

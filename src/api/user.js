@@ -4,4 +4,7 @@ export const userApi = {
   getById(id) {
     return http.get(`user/${id}`);
   },
+  getList(page, size) {
+    return http.get(`user/list?page=${page}&size=${size}`);
+  },
 };

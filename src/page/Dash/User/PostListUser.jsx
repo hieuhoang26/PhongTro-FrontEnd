@@ -161,12 +161,12 @@ export const PostListUser = () => {
                       <td className="p-4 flex items-center gap-3">
                         {post.images.length > 0 && (
                           <img
-                            src={post.images[0]}
+                            src={post.images[1]}
                             alt={post.title}
                             className="w-12 h-12 object-cover p-1 rounded-md"
                           />
                         )}
-                        <p className="text-gray-900 font-medium">
+                        <p className="text-gray-900 font-medium truncate max-w-[300px] whitespace-nowrap">
                           {post.title}
                         </p>
                       </td>

@@ -27,7 +27,19 @@ const tabs = [
     sortBy: "createdAt",
     sortDirection: "desc",
   },
-  { label: "Có video", value: "video", hasVideo: true },
+  {
+    label: "Giá thấp",
+    value: "gia-thap",
+    sortBy: "price",
+    sortDirection: "asc",
+  },
+  {
+    label: "Giá cao",
+    value: "gia-cao",
+    sortBy: "price",
+    sortDirection: "desc",
+  },
+  // { label: "Có video", value: "video", hasVideo: true },
 ];
 
 export default function Home({ typeId }) {
@@ -89,10 +101,17 @@ export default function Home({ typeId }) {
               <div
                 key={index}
                 className="shadow-md text-black-400 cursor-pointer hover:text-orange-600 rounded-bl-md rounded-br-md"
+                // onClick={() => {
+                //   fetchPosts({
+                //     cityId: item.id,
+                //   });
+                // }}
                 onClick={() => {
-                  fetchPosts({
+                  setFilterParams((prev) => ({
+                    ...prev,
                     cityId: item.id,
-                  });
+                    page: 0,
+                  }));
                 }}
               >
                 <img
@@ -110,13 +129,21 @@ export default function Home({ typeId }) {
               {tabs.map((tab) => (
                 <button
                   key={tab.value}
+                  // onClick={() => {
+                  //   setActiveTab(tab.value);
+                  //   fetchPosts({
+                  //     sortBy: tab.sortBy,
+                  //     sortDirection: tab.sortDirection,
+                  //   });
+                  // }}
                   onClick={() => {
                     setActiveTab(tab.value);
-                    fetchPosts({
+                    setFilterParams((prev) => ({
+                      ...prev,
                       sortBy: tab.sortBy,
                       sortDirection: tab.sortDirection,
-                      // hasVideo: tab.hasVideo ?? undefined,
-                    });
+                      page: 0,
+                    }));
                   }}
                   className={`text-sm pb-1 ${
                     activeTab === tab.value

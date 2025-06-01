@@ -4,41 +4,73 @@ import { FaRegMessage } from "react-icons/fa6";
 export const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hello, how can I help you?" },
+    { from: "bot", text: "Hello, tôi có thể giúp gì bạn?" },
   ]);
   const [input, setInput] = useState("");
+  const [mode, setMode] = useState("0");
   const [loading, setLoading] = useState(false);
 
   const callGeminiAPI = async (userInput) => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC37JRIpqR9eJmoRiodcZCRJWbvD93FZl0",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: userInput }],
-              },
-            ],
-          }),
-        }
-      );
-      const data = await response.json();
-      const reply =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Sorry, I couldn't understand.";
 
-      setMessages((prev) => [...prev, { from: "bot", text: reply }]);
+      const response = await fetch("http://localhost:8080/bot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question: userInput, mode: mode }),
+      });
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (mode === "0") {
+        // Xử lý kết quả từ database
+        if (data.result && Array.isArray(data.result)) {
+          if (data.result.length === 0) {
+            setMessages((prev) => [
+              ...prev,
+              { from: "bot", text: "Không tìm thấy kết quả phù hợp." },
+            ]);
+            return;
+          }
+
+          const htmlReply = data.result
+            .map((item) => {
+              /* prettier-ignore */
+              return `<span style="color: #1e40af;">🏠<strong>${item.title || "Không có tiêu đề"}</strong></span>
+<span>📍 <strong>Địa chỉ:</strong> ${item.address || "Chưa cập nhật"}</span>
+<span>📐 <strong>Diện tích:</strong> ${item.area || "N/A"} m²</span>
+<span>💰 <strong>Giá:</strong> ${item.price?.toLocaleString() || "N/A"} VND</span>
+<span>📞 <strong>Liên hệ:</strong> ${item.name_contact || "Chưa cập nhật"} - ${item.phone_contact || "Chưa cập nhật"}</span>
+<a href="/detail/${item.id}" style="color: #2563eb;" target="_blank" rel="noopener noreferrer">🔗 Xem chi tiết</a>`;
+            })
+            .join("<hr/>");
+
+          setMessages((prev) => [...prev, { from: "bot", html: htmlReply }]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { from: "bot", text: "Không tìm thấy dữ liệu." },
+          ]);
+        }
+      } else if (mode === "1") {
+        // Xử lý câu trả lời dạng text
+        if (data.answer) {
+          setMessages((prev) => [...prev, { from: "bot", text: data.answer }]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { from: "bot", text: "Không thể trả lời câu hỏi này." },
+          ]);
+        }
+      }
     } catch (error) {
       console.error("API error:", error);
       setMessages((prev) => [
         ...prev,
-        { from: "bot", text: "Error connecting to AI." },
+        { from: "bot", text: "Lỗi khi kết nối đến máy chủ." },
       ]);
     } finally {
       setLoading(false);
@@ -51,7 +83,7 @@ export const ChatBot = () => {
 
     const userMessage = { from: "user", text: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
-    callGeminiAPI(" phongtro123" + input.trim());
+    callGeminiAPI(input.trim()); // Gọi API với nội dung người dùng nhập
     setInput("");
   };
 
@@ -68,11 +100,21 @@ export const ChatBot = () => {
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-[calc(4rem+1.5rem)] right-4 z-[999] bg-white p-6 rounded-lg border border-gray-200 w-[400px] h-[480px] shadow-md flex flex-col">
-          <div className="flex flex-col space-y-1.5 pb-4">
+        <div className="fixed bottom-[calc(4rem+1.5rem)] right-4 z-[999] bg-white p-6 rounded-lg border border-gray-200 w-[400px] h-[600px] shadow-md flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4">
             <h2 className="font-semibold text-lg tracking-tight">Chatbot</h2>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value)}
+              className="h-8 text-sm rounded-md border border-gray-300 bg-white px-2 py-1 focus:ring-2 focus:ring-gray-400"
+            >
+              <option value="0">🔍 Tìm kiếm</option>
+              <option value="1">ℹ️ Thông tin</option>
+            </select>
           </div>
 
+          {/* Chat messages */}
           <div className="flex-1 pr-2 overflow-y-auto">
             {messages.map((msg, idx) => (
               <div
@@ -81,22 +123,41 @@ export const ChatBot = () => {
                   msg.from === "user" ? "justify-end text-right" : "text-left"
                 }`}
               >
+                {/* Bot avatar placeholder */}
                 {msg.from === "bot" && (
-                  <span className="w-8 h-8 rounded-full bg-gray-200"></span>
+                  <span className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></span>
                 )}
-                <p className="bg-gray-100 px-3 py-2 rounded-lg max-w-[75%]">
-                  <span className="font-medium">
+
+                <div
+                  className={`px-4 py-3 rounded-2xl max-w-[75%] whitespace-pre-wrap ${
+                    msg.from === "user"
+                      ? "bg-black text-white"
+                      : "bg-gray-100 text-gray-900"
+                  }`}
+                >
+                  <div className="font-semibold mb-1">
                     {msg.from === "user" ? "You" : "AI"}
-                  </span>
-                  : {msg.text}
-                </p>
+                  </div>
+
+                  {/* Render HTML if exists, otherwise plain text */}
+                  {msg.html ? (
+                    <div
+                      className="[&_p]:text-xs [&_strong]:text-blue-800"
+                      dangerouslySetInnerHTML={{ __html: msg.html }}
+                    />
+                  ) : (
+                    <p>{msg.text}</p>
+                  )}
+                </div>
               </div>
             ))}
+
             {loading && (
               <div className="text-sm text-gray-500 mt-2">Typing...</div>
             )}
           </div>
 
+          {/* Input area */}
           <form onSubmit={handleSubmit} className="flex pt-4 space-x-2">
             <input
               value={input}

@@ -4,7 +4,8 @@ export const URL_LOGIN = "auth/login";
 export const URL_REGISTER = "auth/register";
 
 export const URL_REFRESH = "auth/refresh";
-export const URL_FORGOT = "auth/forgot-password";
+export const URL_FORGOT = "auth/forgot";
+export const URL_CHANGE = "auth/change";
 // export const URL_LOGOUT = "auth/logout";
 
 export const authApi = {
@@ -15,8 +16,9 @@ export const authApi = {
     return http.post(URL_LOGIN, body);
   },
   forgot(email) {
-    return http.post(`${URL_FORGOT}`, {
-      email: email,
-    });
+    return http.post(`${URL_FORGOT}?email=${email}`);
+  },
+  changePassword(body) {
+    return http.post(`${URL_CHANGE}`, body);
   },
 };

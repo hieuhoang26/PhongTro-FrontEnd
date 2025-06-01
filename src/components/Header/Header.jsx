@@ -26,6 +26,7 @@ import {
   IoChatbubbleEllipsesOutline,
 } from "react-icons/io5";
 import { NotificationDropdown } from "../Noti/NotificationDropdown";
+import { chatApi } from "../../api/socket";
 
 const Header = () => {
   const { isAuthenticated, userId, logout } = useContext(AuthContext);
@@ -54,6 +55,15 @@ const Header = () => {
 
     fetchUserData();
   }, [isAuthenticated, userId]);
+
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    chatApi.isUnread(userId).then((res) => {
+      setHasUnread(res.data === true);
+    });
+  }, [userId]);
 
   const handleOpenLocation = () => {
     setShowLocation(!showLocation);
@@ -114,10 +124,14 @@ const Header = () => {
                   <>
                     <a
                       href="/chat-app"
-                      className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4"
+                      className="hidden xl:flex items-center px-3 py-2 text-gray-700 rounded-full hover:bg-gray-100 mr-4 relative"
                     >
                       <IoChatboxEllipsesOutline className="w-4 h-4 mr-2" />
                       <span>Tin nhắn</span>
+
+                      {hasUnread && (
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                      )}
                     </a>
                     <a
                       href="/admin"

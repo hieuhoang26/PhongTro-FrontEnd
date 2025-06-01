@@ -17,7 +17,11 @@ function LayoutAdmin() {
       </header>
 
       <div className="flex pt-[45px]">
-        {role === "ROLE_USER" ? <SidebarUser /> : <SidebarAdmin />}
+        {role === "ROLE_USER" || role === "ROLE_HOST" ? (
+          <SidebarUser />
+        ) : (
+          <SidebarAdmin />
+        )}
 
         {/* Main Content */}
         <main className="flex-1 min-h-screen bg-gray-50  ml-0 xl:ml-[16.6667%]">

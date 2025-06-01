@@ -30,7 +30,9 @@ export default function Verify() {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { userId } = useContext(AuthContext);
+  const { userId, isVerify } = useContext(AuthContext);
+
+  // console.log("isAuthenticated", isVerify);
 
   const {
     register,
@@ -58,33 +60,33 @@ export default function Verify() {
     const formData = new FormData();
     formData.append("image", file);
 
-    // try {
-    //   const response = await fetch("https://api.fpt.ai/vision/idr/vnm/", {
-    //     method: "POST",
-    //     headers: {
-    //       api_key: OCR_TOKEN,
-    //     },
-    //     body: formData,
-    //   });
+    try {
+      const response = await fetch("https://api.fpt.ai/vision/idr/vnm/", {
+        method: "POST",
+        headers: {
+          api_key: OCR_TOKEN,
+        },
+        body: formData,
+      });
 
-    //   const result = await response.json();
-    //   console.log("OCR API result:", result);
-    //   const data = result?.data?.[0];
+      const result = await response.json();
+      console.log("OCR API result:", result);
+      const data = result?.data?.[0];
 
-    //   if (data) {
-    //     setValue("fullName", data.name || "");
-    //     setValue("dob", formatDate(data.dob));
-    //     setValue("idNumber", data.id || "");
-    //     setValue("address", data.address || "");
-    //   } else {
-    //     toast.error("Không nhận diện được thông tin từ ảnh.");
-    //   }
-    // } catch (error) {
-    //   console.error("OCR API error:", error);
-    //   alert("Có lỗi xảy ra khi gọi API.");
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (data) {
+        setValue("fullName", data.name || "");
+        setValue("dob", formatDate(data.dob));
+        setValue("idNumber", data.id || "");
+        setValue("address", data.address || "");
+      } else {
+        toast.error("Không nhận diện được thông tin từ ảnh.");
+      }
+    } catch (error) {
+      console.error("OCR API error:", error);
+      alert("Có lỗi xảy ra khi gọi API.");
+    } finally {
+      setLoading(false);
+    }
   };
   // Hàm xử lý khi người dùng nhấn nút "Xác minh"
   const onSubmit = async (data) => {
@@ -100,7 +102,7 @@ export default function Verify() {
 
       const response = await verifyApi.verify(formData);
       console.log("Kết quả xác minh:", response.data);
-      toast.success("Xác minh thành công!");
+      toast.success("Gửi thông tin xác minh thành công!");
     } catch (error) {
       console.error("Lỗi xác minh:", error);
       toast.error("Xác minh thất bại.");
@@ -118,6 +120,18 @@ export default function Verify() {
     const [day, month, year] = dobString.split("/");
     return `${year}-${month}-${day}T00:00:00`; // Định dạng ISO với thời gian
   };
+  if (isVerify) {
+    return (
+      <div className="max-w-2xl mx-auto mt-10 p-6 text-center border border-green-300 rounded-xl shadow-md bg-green-50">
+        <h2 className="text-2xl font-bold text-green-700 mb-2">
+          ✅ Tài khoản đã được xác minh
+        </h2>
+        <p className="text-gray-700">
+          Thông tin của bạn đã được xác thực thành công.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">

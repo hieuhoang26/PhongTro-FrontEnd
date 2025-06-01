@@ -30,11 +30,7 @@ export const ChatApp = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef(null);
-
   const token = getAccessTokenFromSession();
-
-  //   console.log("user", userId);
-  //   console.log("curr", currentChat);
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -101,31 +97,37 @@ export const ChatApp = () => {
         // Lấy tin nhắn
         const msgRes = await chatApi.fetchMessages(conversationId, userId);
 
-        // console.log("mess", msgRes.data);
+        console.log("mess", msgRes.data);
         setMessages(
           msgRes.data.map((msg) => ({
             ...msg,
-            incoming: msg.senderId != userId,
+            incoming: msg.senderId !== Number(userId),
           }))
         );
+        let subscription;
 
         // Subscribe WebSocket
-        stompClient.current.subscribe(
+        subscription = stompClient.current.subscribe(
           `/topic/conversations-${conversationId}`,
           (message) => {
             const msg = JSON.parse(message.body);
+            console.log("New message received:", msg);
+            if (msg.senderId === Number(userId)) return;
             setMessages((prev) => [
               ...prev,
               {
                 ...msg,
-                incoming: msg.senderId != userId,
+                incoming: msg.sender.id !== Number(userId),
               },
             ]);
           }
         );
-        console.log(
-          `[WebSocket] Subscribed to /topic/conversations/${conversationId}`
-        );
+        return () => {
+          if (subscription) subscription.unsubscribe();
+        };
+        // console.log(
+        //   `[WebSocket] Subscribed to /topic/conversations/${conversationId}`
+        // );
       } catch (err) {
         console.error("Error loading conversation:", err);
       }
@@ -135,6 +137,7 @@ export const ChatApp = () => {
   }, [currentChat, userId]);
 
   // Send new message
+
   const handleSendMessage = useCallback(() => {
     if (!newMessage.trim() || !currentChat || !stompClient.current?.connected)
       return;
@@ -146,14 +149,14 @@ export const ChatApp = () => {
       contentType: "text",
     };
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        ...message,
-        incoming: false,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
+    // setMessages((prev) => [
+    //   ...prev,
+    //   {
+    //     ...message,
+    //     incoming: false,
+    //     timestamp: new Date().toISOString(),
+    //   },
+    // ]);
 
     stompClient.current.publish({
       destination: "/app/chat.send",

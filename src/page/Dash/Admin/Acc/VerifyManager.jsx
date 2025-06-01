@@ -67,7 +67,19 @@ export const VerifyManager = () => {
   }, [inView]);
 
   const handleAction = async (id, action) => {
+    console.log("Action:", action, "for ID:", id);
     // TODO: approve/reject logic here
+    try {
+      const res = await verifyApi.changeStatus(id, action);
+      // const data = res.data.data.content || [];
+      if (res.data.status == 200) {
+        toast.success("Cập nhật thành công");
+
+        setVerifications((prev) => prev.filter((item) => item.id !== id));
+      }
+    } catch (err) {
+      toast.error("Lỗi khi cập nhật trạng thái");
+    }
   };
 
   return (
@@ -125,14 +137,14 @@ export const VerifyManager = () => {
                 {status === "PENDING" && (
                   <div className="flex gap-3 mt-4">
                     <button
-                      onClick={() => handleAction(item.id, "approve")}
+                      onClick={() => handleAction(item.id, "APPROVED")}
                       className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-full transition"
                     >
                       <FaCheckCircle className="text-white" />
                       Duyệt
                     </button>
                     <button
-                      onClick={() => handleAction(item.id, "reject")}
+                      onClick={() => handleAction(item.id, "REJECTED")}
                       className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-full transition"
                     >
                       <FaTimesCircle className="text-white" />
