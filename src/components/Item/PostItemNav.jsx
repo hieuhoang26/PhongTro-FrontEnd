@@ -41,8 +41,9 @@ const PostItemNav = () => {
             </figure>
 
             <div className="flex-grow">
-              <p className="mb-2 text-[#055699] text-sm font-semibold leading-snug line-clamp-2 capitalize">
-                {post.title}
+              <p className="mb-2 text-[#055699] text-sm font-semibold leading-snug line-clamp-1 capitalize">
+                {/* {post.title} */}
+                {truncateText(post.title)}
               </p>
 
               <div className=" text-xs flex flex-col">
@@ -59,6 +60,10 @@ const PostItemNav = () => {
       ))}
     </ul>
   );
+};
+const truncateText = (text, maxLength = 15) => {
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
 export default PostItemNav;

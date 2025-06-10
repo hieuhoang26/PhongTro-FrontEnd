@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaRegMessage } from "react-icons/fa6";
+import { GoDependabot } from "react-icons/go";
 
 export const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -124,8 +125,17 @@ export const ChatBot = () => {
                 }`}
               >
                 {/* Bot avatar placeholder */}
+                {/* {msg.from === "bot" && (
+                  <span className="w-8 h-8 rounded-full bg-blue-200 flex-shrink-0">
+                    <GoDependabot size={24} />
+                  </span>
+                )} */}
                 {msg.from === "bot" && (
-                  <span className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></span>
+                  <img
+                    src="https://api.dicebear.com/7.x/bottts/svg?seed=bot"
+                    alt="Bot Avatar"
+                    className="w-8 h-8 rounded-full flex-shrink-0"
+                  />
                 )}
 
                 <div
@@ -136,7 +146,7 @@ export const ChatBot = () => {
                   }`}
                 >
                   <div className="font-semibold mb-1">
-                    {msg.from === "user" ? "You" : "AI"}
+                    {msg.from === "user" ? "You" : "Bot"}
                   </div>
 
                   {/* Render HTML if exists, otherwise plain text */}

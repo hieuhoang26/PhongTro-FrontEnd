@@ -60,7 +60,7 @@ const CreatePost = () => {
       .required("Diện tích là bắt buộc")
       .positive("Diện tích phải là số dương"),
     categories: yup.array().min(1, "Chọn ít nhất 1 danh mục"),
-    images: yup.array().min(1, "Cần ít nhất 1 hình ảnh"),
+    images: yup.array().min(3, "Cần ít nhất 3 hình ảnh"),
     username: yup.string().required("Tên liên hệ là bắt buộc"),
     phone: yup
       .string()
@@ -184,7 +184,7 @@ const CreatePost = () => {
             toast.success("Chờ duyệt bài đăng");
             setTimeout(() => {
               navigate("/admin");
-            }, 3000);
+            }, 1000);
           } else if (payMethod === 1) {
             // Pay with wallet
             const walletData = {

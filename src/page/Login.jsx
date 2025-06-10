@@ -8,7 +8,10 @@ import { AuthContext } from "../context/AuthContext";
 
 // Schema validate bằng Yup
 const schema = yup.object({
-  phone: yup.string().required("Số điện thoại không được để trống"),
+  phone: yup
+    .string()
+    .required("Số điện thoại không được để trống")
+    .matches(/^0\d{9}$/, "Số điện thoại không hợp lệ (VD: 0987654321)"),
   password: yup.string().required("Mật khẩu không được để trống"),
 });
 

@@ -36,7 +36,7 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
     contactName: "",
     contactPhone: "",
   });
-  // console.log("formData", formData);
+  console.log("formData", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +100,7 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
       const response = await postApi.detail(postId);
 
       const postData = response.data.data;
-      // console.log("postData", postData);
+      console.log("postData", postData);
 
       // Update form data with API response
       setFormData({
@@ -155,8 +155,13 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
     }
   };
   const extractStreetNumber = (address) => {
-    const match = address.match(/^(\d+)/);
-    return match ? match[1] : "";
+    // const match = address.match(/^(\d+)/);
+    // return match ? match[0] : "";
+    const parts = address.split(",");
+    if (parts.length > 0) {
+      return parts[0].replace(/^\d+\s*/, "").trim();
+    }
+    return "";
   };
 
   const extractStreet = (address) => {
@@ -432,13 +437,13 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
                               className="form-textarea w-full p-2 border border-secondary-subtle rounded-lg border-gray-300"
                               rows="2"
                               required
-                              minLength="30"
+                              minLength="20"
                               maxLength="100"
                               value={formData.title}
                               onChange={handleChange}
                             ></textarea>
                             <p className="mt-2 mb-0 text-gray-500 text-sm">
-                              <span>{formData.title.length}</span> (Tối thiểu 30
+                              <span>{formData.title.length}</span> (Tối thiểu 20
                               ký tự, tối đa 100 ký tự)
                             </p>
                           </div>
@@ -454,14 +459,14 @@ export const PostModal = ({ postId, isOpen, setIsOpen }) => {
                               className="form-textarea w-full p-2 border border-secondary-subtle rounded-lg border-gray-300"
                               rows="5"
                               required
-                              minLength="50"
+                              minLength="20"
                               maxLength="1000"
                               value={formData.description}
                               onChange={handleChange}
                             ></textarea>
                             <p className="mt-2 mb-0 text-gray-500 text-sm">
                               <span>{formData.description.length}</span> (Tối
-                              thiểu 50 ký tự, tối đa 5000 ký tự)
+                              thiểu 20 ký tự, tối đa 5000 ký tự)
                             </p>
                           </div>
                         </div>

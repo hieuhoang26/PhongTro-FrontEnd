@@ -47,7 +47,8 @@ export const TopUpS2 = ({ setStep, payMethod }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const rawAmount = parseInt(formData.amount.replace(/\./g, ""));
+    // const rawAmount = parseInt(formData.amount.replace(/\./g, ""));
+    const rawAmount = total;
     try {
       if (payMethod === 1) {
         const res = await paymentApi.createVnPayPayment(
