@@ -63,6 +63,15 @@ export const postApi = {
   getLatest() {
     return http.get("post/latest");
   },
+  getNearbyDistrict(type, district, postId) {
+    return http.get("post/near-district", {
+      params: {
+        type,
+        district,
+        postId,
+      },
+    });
+  },
 };
 // postApi.filter({
 //     typeId: 1,

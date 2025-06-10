@@ -22,7 +22,6 @@ import {
 } from "../utils/other";
 import { amenitiesList } from "../utils/contant";
 import { postApi } from "../api/post";
-import RelatedPost from "../components/RelatedPost";
 import { FaPhoneAlt, FaStar } from "react-icons/fa";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { MapDetail } from "../components/Map/MapDetail";
@@ -30,6 +29,7 @@ import { ReportModal } from "../components/Report/ReportModal";
 import { AuthContext } from "../context/AuthContext";
 import { favorApi } from "../api/favor";
 import { toast } from "react-toastify";
+import { RelatedPost } from "../components/RelatedPost";
 
 export default function Detail() {
   const { id } = useParams();
@@ -427,18 +427,15 @@ export default function Detail() {
               {/* Tin nổi bật  */}
               <div className="bg-white border border-gray-300 p-4 rounded-xl shadow ">
                 <div className="text-xl font-semibold mb-3">Tin mới đăng</div>
-                <ul>
-                  {posts.map((post, index) => (
-                    <PostItemNav key={index} {...post} />
-                  ))}
-                </ul>
+
+                <PostItemNav />
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-8">
-          <RelatedPost />
+          <RelatedPost post={detail} />
         </div>
       </div>
       <ReportModal
@@ -449,21 +446,3 @@ export default function Detail() {
     </div>
   );
 }
-const posts = [
-  {
-    title: "CHDV Mới Khai Trương Nội Thất Mới 100% Qua Q1 chỉ 3 phút đi bộ",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/sp_1745158968.jpg",
-    price: "6 triệu/tháng",
-    time: "38 phút trước",
-    link: "/chdv-moi-khai-truong-noi-that-moi-100-qua-q1-chi-3-phut-di-bo-pr679876.html",
-  },
-  {
-    title: "(Thủ Đức) - CẦN CHO THUÊ GẤP TẦNG TRỆT LÀM VĂN PHÒNG",
-    image:
-      "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/20/vp5_1745157031.jpg",
-    price: "17 triệu/tháng",
-    time: "1 giờ trước",
-    link: "/thu-duc-can-cho-thue-gap-tang-tret-lam-van-phong-pr679874.html",
-  },
-];

@@ -30,6 +30,10 @@ export const MapBox = () => {
     });
   }, []);
 
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -41,10 +45,17 @@ export const MapBox = () => {
       popupContent.href = `/detail/${post.id}`;
       popupContent.target = "_blank";
       popupContent.className = "block cursor-pointer no-underline w-full";
+
+      const getImage = (displayIndex) => {
+        // Lọc ra các URL là ảnh
+        const imageUrls = post.images?.filter((url) => isImageUrl(url)) || [];
+        return imageUrls[displayIndex] || "/placeholder-image.jpg";
+      };
+
       popupContent.innerHTML = `
     <div class="w-[200px]">
       <div class="rounded-lg shadow-lg overflow-hidden bg-white">
-        <img src="${post.images[0]}" alt="${
+        <img src="${getImage(0)}" alt="${
         post.title
       }" class="w-full h-32 object-cover" />
         <div class="p-3">
