@@ -7,4 +7,7 @@ export const userApi = {
   getList(page, size) {
     return http.get(`user/list?page=${page}&size=${size}`);
   },
+  updateUser(userId, formData) {
+    return http.put(`user/${userId}`, formData);
+  },
 };

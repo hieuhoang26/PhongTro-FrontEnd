@@ -16,7 +16,6 @@ export const FilterProvider = ({ children }) => {
   const [ward, setWard] = useState("");
 
   const { userId } = useContext(AuthContext);
-  // console.log("user", userId);
 
   const [filterParams, setFilterParams] = useState({
     cityId: null,
@@ -26,7 +25,7 @@ export const FilterProvider = ({ children }) => {
     maxPrice: null,
     minArea: null,
     maxArea: null,
-    typeId: null,
+    typeId: type || null,
     categoryIds: [],
     page: 0,
     size: 5,
@@ -77,6 +76,7 @@ export const FilterProvider = ({ children }) => {
     }
 
     setFilterParams(newFilterParams);
+    // console.log("user", type);
     // fetchPosts();
     // fetchPosts(newFilterParams);
   }, [type, price, area, amenities, city, district, ward, userId]);

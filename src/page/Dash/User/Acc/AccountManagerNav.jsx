@@ -20,7 +20,7 @@ export const AccountManagerNav = () => {
   const navItems = [
     { path: "", label: "Thông tin cá nhân" },
     { path: "xac-thuc", label: "Xác thực thông tin" },
-    { path: "doi-dien-thoai", label: "Đổi số điện thoại" },
+    // { path: "doi-dien-thoai", label: "Đổi số điện thoại" },
     { path: "doi-mat-khau", label: "Đổi mật khẩu" },
   ];
 

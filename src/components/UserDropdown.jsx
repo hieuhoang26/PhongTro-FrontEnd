@@ -35,7 +35,11 @@ export default function UserDropdown({ user }) {
         <a href="/" className="flex text-gray-900 mb-3 no-underline">
           <img
             className="w-[60px] h-[60px] rounded-full"
-            src="https://phongtro123.com/images/default-user.svg"
+            // src="https://phongtro123.com/images/default-user.svg"
+            src={
+              user?.avatarUrl ||
+              "https://phongtro123.com/images/default-user.svg"
+            }
             alt="avatar"
           />
           <div className="ml-3 text-sm">

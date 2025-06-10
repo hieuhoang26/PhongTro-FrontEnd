@@ -230,7 +230,7 @@ export default function Detail() {
                           ? "Tin VIP 2"
                           : detail.isVip === 2
                           ? "Tin VIP 3"
-                          : ""}
+                          : "Tin thường"}
                       </td>
                       <td className="py-1 pr-2 text-gray-500">Ngày hết hạn:</td>
                       <td className="py-1">

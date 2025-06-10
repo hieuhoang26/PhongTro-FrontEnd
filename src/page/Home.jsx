@@ -207,13 +207,35 @@ export default function Home({ typeId }) {
                 title="Xem theo khoảng giá"
                 items={priceRanges.filter((item) => item.value !== "ALL")}
                 selectedValue={price}
-                onSelect={(value) => setPrice(value)}
+                // onSelect={(value) => setPrice(value)}
+                onSelect={(value) => {
+                  setPrice(value); // Để giữ highlight
+                  const [minPrice, maxPrice] = value.split("-").map(Number);
+                  setFilterParams((prev) => ({
+                    ...prev,
+                    // typeId: typeId,
+                    minPrice: isNaN(minPrice) ? null : minPrice,
+                    maxPrice: isNaN(maxPrice) ? null : maxPrice,
+                    page: 0,
+                  }));
+                }}
               />
               <FilterPage
                 title="Xem theo diện tích"
                 items={areaRanges.filter((item) => item.value !== "ALL")}
                 selectedValue={area}
-                onSelect={(value) => setArea(value)}
+                // onSelect={(value) => setArea(value)}
+                onSelect={(value) => {
+                  setArea(value); // giữ state để highlight selected
+                  const [minArea, maxArea] = value.split("-").map(Number);
+                  setFilterParams((prev) => ({
+                    ...prev,
+                    // typeId: typeId,
+                    minArea: isNaN(minArea) ? null : minArea,
+                    maxArea: isNaN(maxArea) ? null : maxArea,
+                    page: 0,
+                  }));
+                }}
               />
             </div>
             <div className="bg-white border border-gray-300 p-4 rounded-xl shadow ">
