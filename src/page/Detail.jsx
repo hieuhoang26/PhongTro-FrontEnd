@@ -113,6 +113,22 @@ export default function Detail() {
         <div className="flex gap-6">
           {/* main */}
           <div className="w-7/10 ">
+            {detail.vipExpiryDate &&
+              new Date(detail.vipExpiryDate) < new Date() && (
+                <div className="bg-red-100 px-6 py-4 my-2 rounded-md text-lg flex items-center mx-auto w-full">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="text-red-600 w-5 h-5 sm:w-5 sm:h-5 mr-3"
+                  >
+                    <IoWarningOutline size={24} />
+                  </svg>
+                  <span className="text-red-800">
+                    Tin VIP đã hết hạn. Vui lòng gia hạn để tiếp tục hiển thị ưu
+                    tiên.
+                  </span>
+                </div>
+              )}
+
             <MediaSlider mediaList={detail.images} />
 
             {/* Info */}

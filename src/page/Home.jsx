@@ -2,7 +2,7 @@ import LocationModal from "../components/Filter/LocationModal";
 import { FilterPage } from "../components/Filter/FilterPage";
 import { areaRanges, cityHomePage, priceRanges } from "../utils/contant";
 import PostItemNav from "../components/Item/PostItemNav";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { PostCardV2 } from "../components/Item/PostCardV2";
@@ -72,7 +72,7 @@ export default function Home({ typeId }) {
   useEffect(() => {
     setFilterParams((prev) => ({
       ...prev,
-      typeId: typeId || 1,
+      typeId: typeId || null,
       page: 0,
     }));
     // fetchPosts();
@@ -83,6 +83,10 @@ export default function Home({ typeId }) {
       ...prev,
       page: newPage - 1, // Vì Pagination bên bạn đang truyền newPage (1-based) còn API dùng (0-based)
     }));
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // cuộn mượt mà, có thể dùng 'auto' nếu muốn nhanh
+    });
   };
   return (
     <div className="flex justify-center mt-6">
@@ -209,7 +213,7 @@ export default function Home({ typeId }) {
                 selectedValue={price}
                 // onSelect={(value) => setPrice(value)}
                 onSelect={(value) => {
-                  setPrice(value); // Để giữ highlight
+                  // setPrice(value); // Để giữ highlight
                   const [minPrice, maxPrice] = value.split("-").map(Number);
                   setFilterParams((prev) => ({
                     ...prev,
@@ -226,7 +230,7 @@ export default function Home({ typeId }) {
                 selectedValue={area}
                 // onSelect={(value) => setArea(value)}
                 onSelect={(value) => {
-                  setArea(value); // giữ state để highlight selected
+                  // setArea(value); // giữ state để highlight selected
                   const [minArea, maxArea] = value.split("-").map(Number);
                   setFilterParams((prev) => ({
                     ...prev,

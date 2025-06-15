@@ -61,7 +61,7 @@ const PostItemNav = () => {
     </ul>
   );
 };
-const truncateText = (text, maxLength = 15) => {
+const truncateText = (text, maxLength = 12) => {
   if (!text) return "";
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };

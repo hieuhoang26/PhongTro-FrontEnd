@@ -38,7 +38,7 @@ export const HistoryOrder = () => {
               <th className="p-4">Ngày giao dịch</th>
               <th className="p-4 text-right">Số tiền</th>
 
-              <th className="p-4 text-right">Thực chi</th>
+              {/* <th className="p-4 text-right">Thực chi</th> */}
               <th className="p-4">Mã giao dịch</th>
               <th className="p-4">Phương thức</th>
               <th className="p-4">Ghi chú</th>

@@ -79,6 +79,7 @@ const PendingPost = () => {
     setIsEditModalOpen(true);
   };
 
+  console.log("Posts:", posts);
   // Hàm xử lý khi click nút Approve
   const handleApprove = async (postId) => {
     try {
@@ -121,6 +122,16 @@ const PendingPost = () => {
   if (loading && posts.length === 0) return <div>Đang tải dữ liệu...</div>;
 
   if (posts.length === 0 && !loading) return <div>Không có bài đăng nào.</div>;
+
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
+  const getImage = (displayIndex) => {
+    // Lọc ra các URL là ảnh
+    const imageUrls = posts.images?.filter((url) => isImageUrl(url)) || [];
+    return imageUrls[displayIndex] || "/placeholder-image.jpg";
+  };
 
   return (
     <div className="relative">
@@ -165,7 +176,8 @@ const PendingPost = () => {
               <div className="w-[180px] h-[135px] flex-shrink-0 overflow-hidden rounded">
                 <a href={post.url} title={post.title} className="block h-full">
                   <img
-                    src={post.images[0]}
+                    src={post.images[1]}
+                    // src={getImage(0)}
                     alt="Main"
                     className="object-cover w-full h-full"
                     loading="lazy"

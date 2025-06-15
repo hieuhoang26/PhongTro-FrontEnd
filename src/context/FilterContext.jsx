@@ -6,7 +6,7 @@ import { AuthContext } from "./AuthContext";
 const FilterContext = createContext();
 
 export const FilterProvider = ({ children }) => {
-  const [type, setType] = useState();
+  const [type, setType] = useState("1");
   const [price, setPrice] = useState("ALL");
   const [area, setArea] = useState("ALL");
   const [amenities, setAmenities] = useState([]);
@@ -28,16 +28,17 @@ export const FilterProvider = ({ children }) => {
     typeId: type || null,
     categoryIds: [],
     page: 0,
-    size: 5,
+    size: 10,
     isVip: null,
     userId: userId,
     sortBy: "isVip",
-    status: "APPROVED",
+    status: "APPROVED,EXPIRED",
     sortDirection: "desc",
   });
   // console.log("filterParams", filterParams);
 
   useEffect(() => {
+    console.log("filterParams changed", type);
     const newFilterParams = {
       cityId: city || null,
       districtId: district || null,
@@ -45,11 +46,11 @@ export const FilterProvider = ({ children }) => {
       typeId: type || null,
       categoryIds: amenities.length ? amenities.join(",") : null,
       page: 0,
-      size: 5,
+      size: 10,
       isVip: null,
       userId: userId,
       sortBy: "isVip",
-      status: "APPROVED",
+      status: "APPROVED,EXPIRED",
       sortDirection: "desc",
     };
 

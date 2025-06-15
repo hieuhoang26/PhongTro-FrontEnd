@@ -8,6 +8,7 @@ import { getVipIdFromValue } from "../../../page/Dash/CreatePost";
 import { toast } from "react-toastify";
 import { paymentApi } from "../../../api/payment";
 import { AuthContext } from "../../../context/AuthContext";
+import { now } from "lodash";
 
 export const VipModal = ({ postId, isOpen, setIsOpen }) => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export const VipModal = ({ postId, isOpen, setIsOpen }) => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [payMethod, setPayMethod] = useState(0);
   const [error, setError] = useState(""); // Thêm state để lưu thông báo lỗi
+  const [postStatus, setPostStatus] = useState(""); // Thêm state để lưu trạng thái bài đăng
 
   const pkg = packages.find((p) => p.value === selectedPackage);
   const [isVip, setIsVip] = useState();
@@ -42,6 +44,7 @@ export const VipModal = ({ postId, isOpen, setIsOpen }) => {
       const postData = response.data.data;
       setIsVip(postData.isVip);
       setVipExpiryDate(postData.vipExpiryDate);
+      setPostStatus(postData.status); // Lưu trạng thái bài đăng
     } catch (err) {
       setError(err.message || "Failed to fetch post details");
       console.error("Error fetching post details:", err);
@@ -52,7 +55,12 @@ export const VipModal = ({ postId, isOpen, setIsOpen }) => {
 
   useEffect(() => {
     const calculateExpirationDate = () => {
-      const baseDate = vipExpiryDate ? new Date(vipExpiryDate) : new Date();
+      console.log(isVip, vipExpiryDate, postStatus);
+      // const baseDate = vipExpiryDate ? new Date(vipExpiryDate) : new Date();
+      const baseDate =
+        postStatus === "Expired" || vipExpiryDate == null
+          ? new Date()
+          : new Date(vipExpiryDate);
       let duration = 0;
 
       if (packageType === "day") duration = parseInt(totalDay);
@@ -634,8 +642,9 @@ const paymentOptions = [
   },
 ];
 const formatDate = (dateString) => {
+  if (!dateString) return "";
   const date = new Date(dateString);
-
+  if (isNaN(date.getTime())) return ""; // Kiểm tra nếu ngày không hợp lệ
   // Lấy giờ và phút
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");

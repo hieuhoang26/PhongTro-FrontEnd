@@ -18,7 +18,7 @@ export const WalletNav = () => {
 
   const navItems = [
     { path: "", label: "Nạp tiền vào tài khoản" },
-    { path: "lich-su-nap-tien", label: "Lịch sử nạp tiền" },
+    { path: "lich-su-nap-tien", label: "Lịch sử " },
     { path: "lich-su-thanh-toan", label: "Lịch sử thanh toán" },
   ];
 

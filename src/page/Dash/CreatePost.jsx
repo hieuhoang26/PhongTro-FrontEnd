@@ -218,7 +218,8 @@ const CreatePost = () => {
 
             const { paymentUrl } = paymentResponse.data;
             if (paymentUrl) {
-              window.location.href = paymentUrl;
+              // window.location.href = paymentUrl;
+              window.open(paymentUrl, "_blank");
             } else {
               toast.error("Không lấy được link thanh toán VNPay!");
             }

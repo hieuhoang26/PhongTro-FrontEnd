@@ -27,7 +27,7 @@ const VnPayReturnPage = () => {
 
         if (data) {
           setMessage(
-            "Thanh toán thành công! Cảm ơn bạn. Bạn sẽ được chuyển hướng sau 3 giây..."
+            "Thanh toán thành công! Cảm ơn bạn. Bạn sẽ được chuyển hướng sau ít giây..."
           );
 
           // Thêm độ trễ 3 giây trước khi chuyển hướng

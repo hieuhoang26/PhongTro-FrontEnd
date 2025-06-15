@@ -152,7 +152,8 @@ export const PostCardV3 = ({ post }) => {
               className="inline-flex items-center text-white bg-green-600 hover:bg-green-700 text-sm px-3 py-1 rounded no-underline"
             >
               <FaPhoneAlt className="p-1" size={20} />
-              0931313570
+              {post.phone}
+              {/* 0931313570 */}
             </a>
 
             <button

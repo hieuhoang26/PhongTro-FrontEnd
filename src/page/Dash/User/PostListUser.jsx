@@ -8,6 +8,7 @@ import { PostModal } from "../../../components/Admin/Modal/PostModal";
 import { toast } from "react-toastify";
 import { VipModal } from "../../../components/Admin/Modal/VipModal";
 import { useInView } from "react-intersection-observer";
+import { HiMiniEyeSlash } from "react-icons/hi2";
 
 export const PostListUser = () => {
   const [posts, setPosts] = useState([]);
@@ -63,9 +64,10 @@ export const PostListUser = () => {
   };
 
   const handleDeletePost = async (id) => {
-    if (confirm("Bạn có chắc chắn muốn xoá bài đăng này không?")) {
+    if (confirm("Bạn có chắc chắn muốn ẩn bài đăng này không?")) {
       try {
         // await postApi.delete(id);
+        await postApi.changeStatus(postId, JSON.stringify("EXPIRED"));
         fetchPosts(0);
         toast.success("Đã xoá bài đăng thành công!");
       } catch (error) {
@@ -203,7 +205,8 @@ export const PostListUser = () => {
                             className="p-2 rounded-full hover:bg-red-200 text-red-600"
                             onClick={() => handleDeletePost(post.id)}
                           >
-                            <MdDelete />
+                            {/* <MdDelete /> */}
+                            <HiMiniEyeSlash />
                           </button>
                         </div>
                       </td>

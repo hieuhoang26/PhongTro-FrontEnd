@@ -101,7 +101,19 @@ export const PostListAdmin = () => {
       [name]: value ? value : null,
     }));
   };
+  const isImageUrl = (url) => {
+    return url && /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
 
+  const getImage = (images, displayIndex = 0) => {
+    // Filter valid image URLs
+    const imageUrls = Array.isArray(images)
+      ? images.filter((url) => isImageUrl(url))
+      : [];
+
+    // Return the requested image or placeholder
+    return imageUrls[displayIndex] || "/placeholder-image.jpg";
+  };
   return (
     <div className="relative ">
       <div className="sticky top-[45px] bg-white shadow-sm py-4 px-5 z-10">
@@ -221,7 +233,8 @@ export const PostListAdmin = () => {
                   <td className="p-4 flex items-center gap-3">
                     {post.images.length > 0 && (
                       <img
-                        src={post.images[0]}
+                        // src={post.images[0]}
+                        src={getImage(post.images, 0)}
                         alt={post.title}
                         className="w-12 h-12 object-cover p-1  rounded-md"
                       />

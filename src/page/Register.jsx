@@ -8,7 +8,10 @@ import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   fullname: yup.string().required("Họ tên không được để trống"),
-  phone: yup.string().required("Số điện thoại không được để trống"),
+  phone: yup
+    .string()
+    .required("Số điện thoại không được để trống")
+    .matches(/^0\d{9}$/, "Số điện thoại không hợp lệ (VD: 0987654321)"),
   email: yup
     .string()
     .email("Email không hợp lệ")
@@ -40,7 +43,7 @@ const Register = () => {
     };
 
     try {
-      // await authApi.registerAccount(payload);
+      await authApi.registerAccount(payload);
       console.log(payload);
       toast.success("Tạo tài khoản thành công!");
       navigate("/dang-nhap");
