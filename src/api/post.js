@@ -35,8 +35,13 @@ export const postApi = {
   detail(id) {
     return http.get(`post/${id}`);
   },
-  changeStatus(id, status) {
-    return http.patch(`post/${id}`, status, {
+  // changeStatus(id, status) {
+  //   return http.patch(`post/${id}`, status, {
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // },
+  changeStatus(id, data) {
+    return http.patch(`post/${id}`, data, {
       headers: { "Content-Type": "application/json" },
     });
   },

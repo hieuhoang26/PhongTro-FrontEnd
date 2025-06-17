@@ -6,6 +6,7 @@ import { postApi } from "../../../api/post";
 import { AuthContext } from "../../../context/AuthContext";
 import { PostModal } from "../../../components/Admin/Modal/PostModal";
 import { toast } from "react-toastify";
+import ModalConfirmDelete from "./ModalConfirmDelete";
 
 export const PostListAdmin = () => {
   const [posts, setPosts] = useState([]);
@@ -16,6 +17,8 @@ export const PostListAdmin = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [postId, setPostId] = useState(null);
+
+  // const [showModal, setShowModal] = useState(false);
 
   const { userId } = useContext(AuthContext);
 
@@ -83,7 +86,7 @@ export const PostListAdmin = () => {
   const handleDeletePost = async (id) => {
     if (confirm("Bạn có chắc chắn muốn xoá bài đăng này không?")) {
       try {
-        // await postApi.delete(id);
+        await postApi.delete(id);
         fetchPosts(page);
         toast.success("Đã xoá bài đăng thành công!");
       } catch (error) {
@@ -114,6 +117,7 @@ export const PostListAdmin = () => {
     // Return the requested image or placeholder
     return imageUrls[displayIndex] || "/placeholder-image.jpg";
   };
+
   return (
     <div className="relative ">
       <div className="sticky top-[45px] bg-white shadow-sm py-4 px-5 z-10">

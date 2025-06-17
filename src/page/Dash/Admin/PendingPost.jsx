@@ -7,6 +7,7 @@ import { formatArea, formatPrice, formatTimeAgo } from "../../../utils/other";
 import logoUser from "../../../assets/default_user.svg";
 import { PostModal } from "../../../components/Admin/Modal/PostModal";
 import { toast } from "react-toastify";
+import ModalConfirmDelete from "./ModalConfirmDelete";
 
 const PendingPost = () => {
   const [search, setSearch] = useState("");
@@ -19,6 +20,8 @@ const PendingPost = () => {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     if (loadingRef.current) return;
@@ -83,7 +86,8 @@ const PendingPost = () => {
   // Hàm xử lý khi click nút Approve
   const handleApprove = async (postId) => {
     try {
-      await postApi.changeStatus(postId, JSON.stringify("APPROVED"));
+      // await postApi.changeStatus(postId, JSON.stringify("APPROVED"));
+      await postApi.changeStatus(postId, { status: "APPROVED" });
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
       fetchPosts();
       toast.success("Bài đăng đã được duyệt thành công!");
@@ -94,18 +98,46 @@ const PendingPost = () => {
   };
 
   // Hàm xử lý khi click nút Delete
-  const handleDelete = async (postId) => {
-    // if (window.confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
+  // const handleDelete = async (postId) => {
+  //   try {
+  //     // await postApi.changeStatus(postId, JSON.stringify("REJECTED"));
+  //     setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  //     fetchPosts();
+  //     // Thông báo thành công
+  //     toast.success("Bài đăng đã được xóa thành công!");
+  //   } catch (error) {
+  //     console.error("Failed to delete post:", error);
+  //     toast.error("Có lỗi xảy ra khi xóa bài đăng!");
+  //   }
+  // };
+  const handleDelete = async (postId, reason) => {
     try {
-      await postApi.changeStatus(postId, JSON.stringify("REJECTED"));
+      await postApi.changeStatus(
+        postId,
+        JSON.stringify({
+          status: "REJECTED",
+          reason: reason,
+        })
+      );
+
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-      fetchPosts();
-      // Thông báo thành công
-      toast.success("Bài đăng đã được xóa thành công!");
+      toast.success("Bài đăng đã được từ chối thành công!");
     } catch (error) {
-      console.error("Failed to delete post:", error);
-      toast.error("Có lỗi xảy ra khi xóa bài đăng!");
+      console.error("Failed to reject post:", error);
+      toast.error("Có lỗi xảy ra khi từ chối bài đăng!");
+    } finally {
+      setShowModal(false);
+      setSelectedPostId(null);
     }
+  };
+  const handleOpenModal = (id) => {
+    setSelectedPostId(id);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPostId(null);
   };
 
   const handleCloseEditModal = () => {
@@ -239,7 +271,8 @@ const PendingPost = () => {
                     <MdFileDownloadDone />
                   </button>
                   <button
-                    onClick={() => handleDelete(post.id)}
+                    // onClick={() => handleDelete(post.id)}
+                    onClick={() => handleOpenModal(post.id)}
                     className="text-red-500 hover:text-red-600"
                     title="Xóa bài"
                   >
@@ -262,6 +295,12 @@ const PendingPost = () => {
       {loading && posts.length > 0 && (
         <div className="text-center py-4">Đang tải thêm...</div>
       )}
+      <ModalConfirmDelete
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        // onConfirm={handleDelete}
+        onConfirm={(reason) => handleDelete(selectedPostId, reason)}
+      />
     </div>
   );
 };

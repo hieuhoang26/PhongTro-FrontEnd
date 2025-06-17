@@ -63,16 +63,17 @@ export const PostListUser = () => {
     fetchPosts(0);
   };
 
-  const handleDeletePost = async (id) => {
+  const handleDeletePost = async (postId) => {
     if (confirm("Bạn có chắc chắn muốn ẩn bài đăng này không?")) {
       try {
         // await postApi.delete(id);
-        await postApi.changeStatus(postId, JSON.stringify("EXPIRED"));
+        // await postApi.changeStatus(postId, JSON.stringify("EXPIRED"));
+        await postApi.changeStatus(postId, { status: "EXPIRED" });
         fetchPosts(0);
-        toast.success("Đã xoá bài đăng thành công!");
+        toast.success("Đã ẩn bài đăng thành công!");
       } catch (error) {
         console.error(error);
-        toast.error("Xoá bài đăng thất bại, vui lòng thử lại!");
+        toast.error("Ẩn bài đăng thất bại, vui lòng thử lại!");
       }
     }
   };

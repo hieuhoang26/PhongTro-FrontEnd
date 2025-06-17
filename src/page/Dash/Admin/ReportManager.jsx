@@ -24,7 +24,8 @@ export const ReportManager = () => {
 
   const handleApprove = async (postId) => {
     try {
-      await postApi.changeStatus(postId, JSON.stringify("APPROVED"));
+      // await postApi.changeStatus(postId, JSON.stringify("APPROVED"));
+      await postApi.changeStatus(postId, { status: "APPROVED" });
       fetchReports();
     } catch (error) {
       console.error("Failed to approve:", error);
@@ -33,7 +34,8 @@ export const ReportManager = () => {
 
   const handleReject = async (postId) => {
     try {
-      await postApi.changeStatus(postId, JSON.stringify("REJECTED"));
+      // await postApi.changeStatus(postId, JSON.stringify("REJECTED"));
+      await postApi.changeStatus(postId, { status: "REJECTED" });
       fetchReports();
     } catch (error) {
       console.error("Failed to reject:", error);
