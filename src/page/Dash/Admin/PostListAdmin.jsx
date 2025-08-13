@@ -250,7 +250,7 @@ export const PostListAdmin = () => {
                   </td>
                   <td className="p-4 text-gray-700">{post.area} m²</td>
                   <td className="p-4 text-gray-700">{post.address}</td>
-                  <td className="p-4 text-gray-700">{post.status}</td>
+                  <td className="p-5 text-gray-700">{post.status}</td>
                   <td className="p-4 text-gray-700">
                     {new Date(post.createdAt).toLocaleDateString()}
                   </td>
